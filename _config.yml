@@ -1,11 +1,12 @@
-title: Cayman Blog Theme
-description: Cayman Blog Theme is a clean, responsive blogging theme for Jekyll and GitHub Pages, with social/SEO features.
-show_downloads: true
+title: jylaxp`s Blog
+description: 
+show_downloads: false
 
-baseurl: "" # change this to the subpath of your site, e.g. /blog. Leave it empty if you don't need it.
-url: "https://jylaxp.github.io" # change this to the base hostname & protocol for your site
+baseurl:
+url: "https://jylaxp.github.io"
+blog-img: "assets/blog-img"
 
-google_analytics:
+#google_analytics:
 # cayman-blog date format
 # refer to http://shopify.github.io/liquid/filters/date/ if you want to customize this
 cayman-blog:
@@ -14,14 +15,19 @@ cayman-blog:
 theme: # leave it empty
 
 # social
-author: "Lore Pirri"
-image: /thumbnail-jumbo.png
-twitter:
-  username: jylaxp
+author: "jylaxp"
+#image: /thumbnail-jumbo.png
+github:
+    owner_url: https://jylaxp.github.io
+    owner_name: jylaxp
+#twitter:
+#  username: jylaxp
 #  site:
-facebook:
+#facebook:
   #publisher: 1592372034171500
   #profile_id: 1809805629
-  app_id: 1798910940422432 # jylaxp
+  #app_id: 1798910940422432 # jylaxp
   #authors: lorepirri
 #  admins:
+
+exclude: [LICENSE,README.md,CODE_OF_CONDUCT.md,CONTRIBUTING.md,jekyll-theme-cayman-blog.gemspec,Gemfile,Gemfile.lock]
