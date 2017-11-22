@@ -4,7 +4,7 @@ title: Spring 初始化 ContextLoaderListener 与 DispatcherServlet
 category: Spring
 img-path: 2017-11-22-ContextLoaderListener-And-DispatcherServlet
 ---
-# Spring 初始化 ContextLoaderListener 与 DispatcherServlet
+
 ## 0. 概述
 分析web项目中spring的配置，初始化，bean解析和注入的过程，以及spring bean 的生命周期和扩展点，深入学习spring框架的使用。  
 示例项目: [springinside](https://github.com/jylaxp/springinside)
