@@ -30,4 +30,4 @@ github:
   #authors: lorepirri
 #  admins:
 
-exclude: [LICENSE,README.md,CODE_OF_CONDUCT.md,CONTRIBUTING.md,jekyll-theme-cayman-blog.gemspec,Gemfile,Gemfile.lock]
+exclude: [LICENSE,README.md,CODE_OF_CONDUCT.md,CONTRIBUTING.md,jekyll-theme-cayman-blog.gemspec,Gemfile,Gemfile.lock,startup.sh]
