@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <!-- Non social metatags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="theme-color" content="#157878">
+
+    
+
+    <title>kafka 安装配置</title>
+
+    
+      <!-- Update your html tag to include the itemscope and itemtype attributes. -->
+<html itemscope itemtype="http://schema.org/Article">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Place this data between the <head> tags of your website -->
+
+  <meta name="author" content="jylaxp">
+
+<meta name="description" content="1. 环境 准备三台机器，ip如下:" />
+
+
+
+
+
+<!-- Schema.org markup for Google+ -->
+<meta itemprop="name" content="kafka 安装配置">
+<meta itemprop="description" content="1. 环境 准备三台机器，ip如下:">
+
+  <meta itemprop="image" content="http://localhost:4000">
+
+
+<!-- Twitter Card data -->
+<meta name="twitter:card" content="summary_large_image">
+
+
+
+<meta name="twitter:title" content="kafka 安装配置">
+<meta name="twitter:description" content="1. 环境 准备三台机器，ip如下:">
+
+
+
+<!-- Twitter summary card with large image must be at least 280x150px -->
+
+  <meta name="twitter:image:src" content="http://localhost:4000">
+  <meta property="twitter:image" content="http://localhost:4000">
+
+<meta property="twitter:url" content="http://localhost:4000/2017/07/05/kafka-setup-and-configure.html">
+
+<!-- Open Graph data -->
+<meta property="og:title" content="kafka 安装配置" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:4000/2017/07/05/kafka-setup-and-configure.html" />
+
+  <meta property="og:image" content="http://localhost:4000" />
+
+<meta property="og:description" content="1. 环境 准备三台机器，ip如下:" />
+<meta property="og:site_name" content="jylaxp's Blog" />
+
+  <meta property="article:published_time" content="2017-07-05T00:00:00+08:00" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+    
+
+    <link rel="canonical" href="http://localhost:4000/2017/07/05/kafka-setup-and-configure.html">
+
+    
+
+    <link rel="shortcut icon" href="http://localhost:4000/favicon.ico">
+    <meta name="robots" content="noarchive">
+
+    <!-- <link rel="alternate" media="only screen and (max-width: 640px)" href="">
+    <link rel="alternate" media="handheld" href=""> -->
+
+
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+  </head>
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+    
+    
+
+    
+      <a class="site-title" href="/">jylaxp&#39;s Blog</a>
+    
+
+    
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger">
+          
+            
+            
+              
+              
+            
+          
+            
+            
+              
+                <a class="page-link" href="/about.html">About</a>
+              
+            
+          
+            
+            
+              
+                <a class="page-link" href="/contact.html">Contact</a>
+              
+            
+          
+            
+            
+          
+            
+            
+          
+        </div>
+      </nav>
+    
+  </div>
+</header>
+
+
+    
+    
+    
+
+    <section class="page-header">
+      <h1 class="project-name">kafka 安装配置</h1>
+      <h2 class="project-tagline"></h2>
+      
+      <!-- Post tagline -->
+      
+        <h2 class="project-date">
+        <time datetime="2017-07-05T00:00:00+08:00" itemprop="datePublished">
+          
+          Jul 5, 2017
+        </time>
+        
+        
+          • <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">jylaxp</span></span>
+        
+        </h2>
+      
+      <!-- End: Post tagline -->
+    </section>
+
+    <section class="main-content">
+
+      <article itemscope itemtype="http://schema.org/BlogPosting">
+
+  <!-- <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">kafka 安装配置</h1>
+    <p class="post-meta">
+      <time datetime="2017-07-05T00:00:00+08:00" itemprop="datePublished">
+        
+        Jul 5, 2017
+      </time>
+      </p>
+  </header> -->
+
+  <div itemprop="articleBody">
+    <h2 id="1-环境">1. 环境</h2>
+<p>准备三台机器，ip如下:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>节点</th>
+      <th>ip</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>node1</td>
+      <td>192.168.95.128</td>
+    </tr>
+    <tr>
+      <td>node2</td>
+      <td>192.168.95.135</td>
+    </tr>
+    <tr>
+      <td>node3</td>
+      <td>192.168.95.136</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="2-kafak安装配置">2. kafak安装配置</h2>
+<h3 id="21-zookeeper-安装配置">2.1 zookeeper 安装配置</h3>
+<p>kafka依赖zookeeper，所以在运行kafka之前先安装配置好并启动zookeeper。 <br />
+生产环境的zookeeper一般是集群，这里为了简化，使用单机，配置在192.168.95.128节点上。</p>
+
+<h2 id="3-kafka-安装配置单机">3. kafka 安装配置（单机）</h2>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget http://192.168.95.1/www/lib/kafka_2.12-0.10.2.0.tgz
+<span class="nb">tar</span> <span class="nt">-zxvf</span> kafka_2.12-0.10.2.0.tgz
+mv kafka_2.12-0.10.2.0 kafka
+</code></pre></div></div>
+<p>kafak的配置文件kafak/configure/server.properties <br />
+现在只要配置来两个配置项就ok</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">listeners</span><span class="o">=</span>PLAINTEXT://192.168.95.135:9092
+zookeeper.connect<span class="o">=</span>192.168.95.128:2181
+</code></pre></div></div>
+<p>其他配置项保持默认就可以了，配置好的配置文件如下</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Licensed to the Apache Software Foundation (ASF) under one or more</span>
+<span class="c"># contributor license agreements.  See the NOTICE file distributed with</span>
+<span class="c"># this work for additional information regarding copyright ownership.</span>
+<span class="c"># The ASF licenses this file to You under the Apache License, Version 2.0</span>
+<span class="c"># (the "License"); you may not use this file except in compliance with</span>
+<span class="c"># the License.  You may obtain a copy of the License at</span>
+<span class="c">#</span>
+<span class="c">#    http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c">#</span>
+<span class="c"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c"># distributed under the License is distributed on an "AS IS" BASIS,</span>
+<span class="c"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c"># See the License for the specific language governing permissions and</span>
+<span class="c"># limitations under the License.</span>
+
+<span class="c"># see kafka.server.KafkaConfig for additional details and defaults</span>
+
+<span class="c">############################# Server Basics #############################</span>
+
+<span class="c"># The id of the broker. This must be set to a unique integer for each broker.</span>
+broker.id<span class="o">=</span>0
+
+<span class="c"># Switch to enable topic deletion or not, default value is false</span>
+<span class="c">#delete.topic.enable=true</span>
+
+<span class="c">############################# Socket Server Settings #############################</span>
+
+<span class="c"># The address the socket server listens on. It will get the value returned from </span>
+<span class="c"># java.net.InetAddress.getCanonicalHostName() if not configured.</span>
+<span class="c">#   FORMAT:</span>
+<span class="c">#     listeners = listener_name://host_name:port</span>
+<span class="c">#   EXAMPLE:</span>
+<span class="c">#     listeners = PLAINTEXT://your.host.name:9092</span>
+<span class="nv">listeners</span><span class="o">=</span>PLAINTEXT://192.168.95.135:9092
+
+<span class="c"># Hostname and port the broker will advertise to producers and consumers. If not set, </span>
+<span class="c"># it uses the value for "listeners" if configured.  Otherwise, it will use the value</span>
+<span class="c"># returned from java.net.InetAddress.getCanonicalHostName().</span>
+<span class="c">#advertised.listeners=PLAINTEXT://your.host.name:9092</span>
+
+<span class="c"># Maps listener names to security protocols, the default is for them to be the same. See the config documentation for more details</span>
+<span class="c">#listener.security.protocol.map=PLAINTEXT:PLAINTEXT,SSL:SSL,SASL_PLAINTEXT:SASL_PLAINTEXT,SASL_SSL:SASL_SSL</span>
+
+<span class="c"># The number of threads handling network requests</span>
+num.network.threads<span class="o">=</span>3
+
+<span class="c"># The number of threads doing disk I/O</span>
+num.io.threads<span class="o">=</span>8
+
+<span class="c"># The send buffer (SO_SNDBUF) used by the socket server</span>
+socket.send.buffer.bytes<span class="o">=</span>102400
+
+<span class="c"># The receive buffer (SO_RCVBUF) used by the socket server</span>
+socket.receive.buffer.bytes<span class="o">=</span>102400
+
+<span class="c"># The maximum size of a request that the socket server will accept (protection against OOM)</span>
+socket.request.max.bytes<span class="o">=</span>104857600
+
+
+<span class="c">############################# Log Basics #############################</span>
+
+<span class="c"># A comma seperated list of directories under which to store log files</span>
+log.dirs<span class="o">=</span>/tmp/kafka-logs
+
+<span class="c"># The default number of log partitions per topic. More partitions allow greater</span>
+<span class="c"># parallelism for consumption, but this will also result in more files across</span>
+<span class="c"># the brokers.</span>
+num.partitions<span class="o">=</span>1
+
+<span class="c"># The number of threads per data directory to be used for log recovery at startup and flushing at shutdown.</span>
+<span class="c"># This value is recommended to be increased for installations with data dirs located in RAID array.</span>
+num.recovery.threads.per.data.dir<span class="o">=</span>1
+
+<span class="c">############################# Log Flush Policy #############################</span>
+
+<span class="c"># Messages are immediately written to the filesystem but by default we only fsync() to sync</span>
+<span class="c"># the OS cache lazily. The following configurations control the flush of data to disk.</span>
+<span class="c"># There are a few important trade-offs here:</span>
+<span class="c">#    1. Durability: Unflushed data may be lost if you are not using replication.</span>
+<span class="c">#    2. Latency: Very large flush intervals may lead to latency spikes when the flush does occur as there will be a lot of data to flush.</span>
+<span class="c">#    3. Throughput: The flush is generally the most expensive operation, and a small flush interval may lead to exceessive seeks.</span>
+<span class="c"># The settings below allow one to configure the flush policy to flush data after a period of time or</span>
+<span class="c"># every N messages (or both). This can be done globally and overridden on a per-topic basis.</span>
+
+<span class="c"># The number of messages to accept before forcing a flush of data to disk</span>
+<span class="c">#log.flush.interval.messages=10000</span>
+
+<span class="c"># The maximum amount of time a message can sit in a log before we force a flush</span>
+<span class="c">#log.flush.interval.ms=1000</span>
+
+<span class="c">############################# Log Retention Policy #############################</span>
+
+<span class="c"># The following configurations control the disposal of log segments. The policy can</span>
+<span class="c"># be set to delete segments after a period of time, or after a given size has accumulated.</span>
+<span class="c"># A segment will be deleted whenever *either* of these criteria are met. Deletion always happens</span>
+<span class="c"># from the end of the log.</span>
+
+<span class="c"># The minimum age of a log file to be eligible for deletion due to age</span>
+log.retention.hours<span class="o">=</span>168
+
+<span class="c"># A size-based retention policy for logs. Segments are pruned from the log as long as the remaining</span>
+<span class="c"># segments don't drop below log.retention.bytes. Functions independently of log.retention.hours.</span>
+<span class="c">#log.retention.bytes=1073741824</span>
+
+<span class="c"># The maximum size of a log segment file. When this size is reached a new log segment will be created.</span>
+log.segment.bytes<span class="o">=</span>1073741824
+
+<span class="c"># The interval at which log segments are checked to see if they can be deleted according</span>
+<span class="c"># to the retention policies</span>
+log.retention.check.interval.ms<span class="o">=</span>300000
+
+<span class="c">############################# Zookeeper #############################</span>
+
+<span class="c"># Zookeeper connection string (see zookeeper docs for details).</span>
+<span class="c"># This is a comma separated host:port pairs, each corresponding to a zk</span>
+<span class="c"># server. e.g. "127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002".</span>
+<span class="c"># You can also append an optional chroot string to the urls to specify the</span>
+<span class="c"># root directory for all kafka znodes.</span>
+zookeeper.connect<span class="o">=</span>192.168.95.128:2181
+
+<span class="c"># Timeout in ms for connecting to zookeeper</span>
+zookeeper.connection.timeout.ms<span class="o">=</span>6000
+</code></pre></div></div>
+<p>启动kafka服务</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bin/kafka-server-start.sh config/server.properties
+</code></pre></div></div>
+<p>创建topic</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@centos kafka]# bin/kafka-topics.sh <span class="nt">--create</span> <span class="nt">--zookeeper</span> 192.168.95.128:2181 <span class="nt">--replication-factor</span> 1 <span class="nt">--partitions</span> 1 <span class="nt">--topic</span> my_topic_1
+WARNING: Due to limitations <span class="k">in </span>metric names, topics with a period <span class="o">(</span><span class="s1">'.'</span><span class="o">)</span> or underscore <span class="o">(</span><span class="s1">'_'</span><span class="o">)</span> could collide. To avoid issues it is best to use either, but not both.
+Created topic <span class="s2">"my_topic_1"</span><span class="nb">.</span>
+</code></pre></div></div>
+<p>查看创建的topic</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@centos kafka]# bin/kafka-topics.sh <span class="nt">--list</span> <span class="nt">--zookeeper</span> 192.168.95.128:2181
+__consumer_offsets
+my_topic_1
+<span class="o">[</span>root@centos kafka]# 
+</code></pre></div></div>
+<p>启动消费者</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">[</span>root@centos kafka]# bin/kafka-console-consumer.sh <span class="nt">--bootstrap-server</span> 192.168.95.135:9092 <span class="nt">--topic</span> my_topic_1 <span class="nt">--from-beginning</span>
+</code></pre></div></div>
+<p>启动生产者</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code> bin/kafka-console-producer.sh <span class="nt">--broker-list</span> 192.168.95.135:9092 <span class="nt">--topic</span> my_topic_1
+</code></pre></div></div>
+
+<h2 id="4-kafka-集群">4. kafka 集群</h2>
+<p>broker划分</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>broker</th>
+      <th>broker.id</th>
+      <th>节点</th>
+      <th>ip</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>broker0</td>
+      <td>0</td>
+      <td>node1</td>
+      <td>192.168.95.128</td>
+    </tr>
+    <tr>
+      <td>broker1</td>
+      <td>1</td>
+      <td>node2</td>
+      <td>192.168.95.135</td>
+    </tr>
+    <tr>
+      <td>broker2</td>
+      <td>2</td>
+      <td>node3</td>
+      <td>192.168.95.136</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>集群配置和简单，只要在各个broker上配置好如上单机版的配置，在此基础上分配好broker.id即可，broker.id是每一个broker的表示，同一集群不可重复。</p>
+
+  </div>
+
+  
+</article>
+
+
+      <footer class="site-footer">
+        <!-- SVG icons from https://iconmonstr.com -->
+
+        <!-- Github icon -->
+        <span class="my-span-icon">
+          <a href="https://github.com/jylaxp" aria-label="jylaxp's GitHub" title="jylaxp's GitHub">
+            <svg class="my-svg-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          </a>
+        </span>
+
+        <!-- Twitter icon
+        <span class="my-span-icon">
+          <a href="https://twitter.com/" aria-label="jylaxp's Twitter" title="jylaxp's Twitter">
+            <svg class="my-svg-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6.066 9.645c.183 4.04-2.83 8.544-8.164 8.544-1.622 0-3.131-.476-4.402-1.291 1.524.18 3.045-.244 4.252-1.189-1.256-.023-2.317-.854-2.684-1.995.451.086.895.061 1.298-.049-1.381-.278-2.335-1.522-2.304-2.853.388.215.83.344 1.301.359-1.279-.855-1.641-2.544-.889-3.835 1.416 1.738 3.533 2.881 5.92 3.001-.419-1.796.944-3.527 2.799-3.527.825 0 1.572.349 2.096.907.654-.128 1.27-.368 1.824-.697-.215.671-.67 1.233-1.263 1.589.581-.07 1.135-.224 1.649-.453-.384.578-.87 1.084-1.433 1.489z"/></svg>
+          </a>
+        </span>
+ -->
+        <!-- RSS icon -->
+        
+        <!-- Contact icon -->
+        
+        
+          <span class="my-span-icon">
+            <a href="/about.html" aria-label="Contact" title="Contact jylaxp">
+              <svg class="my-svg-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 .02c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6.99 6.98l-6.99 5.666-6.991-5.666h13.981zm.01 10h-14v-8.505l7 5.673 7-5.672v8.504z"/></svg>
+            </a>
+          </span>
+        
+
+      </footer>
+    </section>
+
+    
+  </body>
+</html>

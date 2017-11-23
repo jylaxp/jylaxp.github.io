@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <!-- Non social metatags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="theme-color" content="#157878">
+
+    
+
+    <title>Spring 初始化 ContextLoaderListener 与 DispatcherServlet</title>
+
+    
+      <!-- Update your html tag to include the itemscope and itemtype attributes. -->
+<html itemscope itemtype="http://schema.org/Article">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Place this data between the <head> tags of your website -->
+
+  <meta name="author" content="jylaxp">
+
+<meta name="description" content="0. 概述 分析web项目中spring的配置，初始化，bean解析和注入的过程，以及spring bean 的生命周期和扩展点，深入学习spring框架的使用。 示例项目: springinside" />
+
+
+
+
+  <meta name="keywords" itemprop="category" content="">
+
+
+<!-- Schema.org markup for Google+ -->
+<meta itemprop="name" content="Spring 初始化 ContextLoaderListener 与 DispatcherServlet">
+<meta itemprop="description" content="0. 概述 分析web项目中spring的配置，初始化，bean解析和注入的过程，以及spring bean 的生命周期和扩展点，深入学习spring框架的使用。 示例项目: springinside">
+
+  <meta itemprop="image" content="http://localhost:4000">
+
+
+<!-- Twitter Card data -->
+<meta name="twitter:card" content="summary_large_image">
+
+
+
+<meta name="twitter:title" content="Spring 初始化 ContextLoaderListener 与 DispatcherServlet">
+<meta name="twitter:description" content="0. 概述 分析web项目中spring的配置，初始化，bean解析和注入的过程，以及spring bean 的生命周期和扩展点，深入学习spring框架的使用。 示例项目: springinside">
+
+
+
+<!-- Twitter summary card with large image must be at least 280x150px -->
+
+  <meta name="twitter:image:src" content="http://localhost:4000">
+  <meta property="twitter:image" content="http://localhost:4000">
+
+<meta property="twitter:url" content="http://localhost:4000/spring/2017/11/22/ContextLoaderListener-And-DispatcherServlet.html">
+
+<!-- Open Graph data -->
+<meta property="og:title" content="Spring 初始化 ContextLoaderListener 与 DispatcherServlet" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:4000/spring/2017/11/22/ContextLoaderListener-And-DispatcherServlet.html" />
+
+  <meta property="og:image" content="http://localhost:4000" />
+
+<meta property="og:description" content="0. 概述 分析web项目中spring的配置，初始化，bean解析和注入的过程，以及spring bean 的生命周期和扩展点，深入学习spring框架的使用。 示例项目: springinside" />
+<meta property="og:site_name" content="jylaxp's Blog" />
+
+  <meta property="article:published_time" content="2017-11-22T00:00:00+08:00" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <meta property="article:tag" content="Spring">
+  
+
+
+
+  <meta property="article:tag" content="">
+
+
+    
+
+    <link rel="canonical" href="http://localhost:4000/spring/2017/11/22/ContextLoaderListener-And-DispatcherServlet.html">
+
+    
+
+    <link rel="shortcut icon" href="http://localhost:4000/favicon.ico">
+    <meta name="robots" content="noarchive">
+
+    <!-- <link rel="alternate" media="only screen and (max-width: 640px)" href="">
+    <link rel="alternate" media="handheld" href=""> -->
+
+
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+  </head>
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+    
+    
+
+    
+      <a class="site-title" href="/">jylaxp&#39;s Blog</a>
+    
+
+    
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger">
+          
+            
+            
+              
+              
+            
+          
+            
+            
+              
+                <a class="page-link" href="/about.html">About</a>
+              
+            
+          
+            
+            
+              
+                <a class="page-link" href="/contact.html">Contact</a>
+              
+            
+          
+            
+            
+          
+            
+            
+          
+        </div>
+      </nav>
+    
+  </div>
+</header>
+
+
+    
+    
+    
+
+    <section class="page-header">
+      <h1 class="project-name">Spring 初始化 ContextLoaderListener 与 DispatcherServlet</h1>
+      <h2 class="project-tagline"></h2>
+      
+      <!-- Post tagline -->
+      
+        <h2 class="project-date">
+        <time datetime="2017-11-22T00:00:00+08:00" itemprop="datePublished">
+          
+          Nov 22, 2017
+        </time>
+        
+        
+          • <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">jylaxp</span></span>
+        
+        </h2>
+      
+      <!-- End: Post tagline -->
+    </section>
+
+    <section class="main-content">
+
+      <article itemscope itemtype="http://schema.org/BlogPosting">
+
+  <!-- <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Spring 初始化 ContextLoaderListener 与 DispatcherServlet</h1>
+    <p class="post-meta">
+      <time datetime="2017-11-22T00:00:00+08:00" itemprop="datePublished">
+        
+        Nov 22, 2017
+      </time>
+      </p>
+  </header> -->
+
+  <div itemprop="articleBody">
+    <h2 id="0-概述">0. 概述</h2>
+<p>分析web项目中spring的配置，初始化，bean解析和注入的过程，以及spring bean 的生命周期和扩展点，深入学习spring框架的使用。<br />
+示例项目: <a href="https://github.com/jylaxp/springinside">springinside</a></p>
+
+<h2 id="1-spring-web-配置文件">1. spring web 配置文件</h2>
+<p>项目常见的spring web 的web.xml， 这里去掉了一些无关的配置，尽量最小化配置</p>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;web-app</span> <span class="na">version=</span><span class="s">"2.4"</span>
+         <span class="na">xmlns=</span><span class="s">"http://java.sun.com/xml/ns/j2ee"</span>
+         <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+         <span class="na">xsi:schemaLocation=</span><span class="s">"http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"</span><span class="nt">&gt;</span>
+
+    <span class="nt">&lt;context-param&gt;</span>
+        <span class="nt">&lt;param-name&gt;</span>contextConfigLocation<span class="nt">&lt;/param-name&gt;</span>
+        <span class="nt">&lt;param-value&gt;</span>classpath*:META-INF/spring/*.xml<span class="nt">&lt;/param-value&gt;</span>
+    <span class="nt">&lt;/context-param&gt;</span>
+
+    <span class="nt">&lt;listener&gt;</span>
+        <span class="nt">&lt;listener-class&gt;</span>org.springframework.web.context.ContextLoaderListener<span class="nt">&lt;/listener-class&gt;</span>
+    <span class="nt">&lt;/listener&gt;</span>
+
+    <span class="nt">&lt;servlet&gt;</span>
+        <span class="nt">&lt;description&gt;</span>spring inside<span class="nt">&lt;/description&gt;</span>
+        <span class="nt">&lt;display-name&gt;</span>spring inside<span class="nt">&lt;/display-name&gt;</span>
+        <span class="nt">&lt;servlet-name&gt;</span>springinside<span class="nt">&lt;/servlet-name&gt;</span>
+        <span class="nt">&lt;servlet-class&gt;</span>org.springframework.web.servlet.DispatcherServlet<span class="nt">&lt;/servlet-class&gt;</span>
+        <span class="nt">&lt;init-param&gt;</span>
+            <span class="nt">&lt;param-name&gt;</span>contextConfigLocation<span class="nt">&lt;/param-name&gt;</span>
+            <span class="nt">&lt;param-value&gt;</span>WEB-INF/applicationContext.xml<span class="nt">&lt;/param-value&gt;</span>
+        <span class="nt">&lt;/init-param&gt;</span>
+        <span class="nt">&lt;load-on-startup&gt;</span>1<span class="nt">&lt;/load-on-startup&gt;</span>
+    <span class="nt">&lt;/servlet&gt;</span>
+
+    <span class="nt">&lt;servlet-mapping&gt;</span>
+        <span class="nt">&lt;servlet-name&gt;</span>springinside<span class="nt">&lt;/servlet-name&gt;</span>
+        <span class="nt">&lt;url-pattern&gt;</span>/*<span class="nt">&lt;/url-pattern&gt;</span>
+    <span class="nt">&lt;/servlet-mapping&gt;</span>
+<span class="nt">&lt;/web-app&gt;</span>
+</code></pre></div></div>
+
+<ol>
+  <li>配置context-param,contextConfigLocation 指定ContextLoaderListener使用的配置文件</li>
+  <li>配置了ContextLoaderListener，监听web容器的启动，用于做些初始化工作</li>
+  <li>配置了DispatcherServlet处理web请求，指定了DispatcherServlet要加载的配置文件</li>
+</ol>
+
+<p>对于spring web 项目来说，其中1和2不是必须的，可以没有。但是，这里配置ContextLoaderListener，是为了和部门的项目一致。部门的sof开发框架在web容器启动的时候有一些初始化操作，就是在ContextLoaderListener这里触发的。接下来我们分析ContextLoaderListener和DispatcherServlet源码，来看看spring是怎么完成初始化的。</p>
+
+<h2 id="2-contextloaderlistener分析">2. ContextLoaderListener分析</h2>
+<h3 id="21-继承关系">2.1 继承关系</h3>
+<p>首先，看一下ContextLoaderListener的继承关系</p>
+
+<p><img src="http://localhost:4000/assets/blog-img/2017-11-22-ContextLoaderListener-And-DispatcherServlet/1.png" alt="" /></p>
+
+<p>可以看到，ContextLoaderListener实现了ServletContextListener接口。ServletContextListener接口够监听 ServletContext 对象的生命周期，实际上就是监听 Web应用的生命周期。当Servlet 容器启动或终止Web 应用时，会触发ServletContextEvent 事件，该事件由ServletContextListener 来处理。</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">ServletContextListener</span> <span class="kd">extends</span> <span class="n">EventListener</span> <span class="o">{</span>
+	<span class="cm">/**
+	 ** Notification that the web application initialization
+	 ** process is starting.
+	 ** All ServletContextListeners are notified of context
+	 ** initialization before any filter or servlet in the web
+	 ** application is initialized.
+	 */</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">contextInitialized</span> <span class="o">(</span> <span class="n">ServletContextEvent</span> <span class="n">sce</span> <span class="o">);</span>
+
+	<span class="cm">/**
+	 ** Notification that the servlet context is about to be shut down.
+	 ** All servlets and filters have been destroy()ed before any
+	 ** ServletContextListeners are notified of context
+	 ** destruction.
+	 */</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">contextDestroyed</span> <span class="o">(</span> <span class="n">ServletContextEvent</span> <span class="n">sce</span> <span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>当Servlet启动时就会调用contextInitialized方法；当Servlet销毁时会调用contextDestroyed方法。</p>
+<h3 id="22-contextloaderlistener">2.2 ContextLoaderListener</h3>
+<p>接下来我们看ContextLoaderListener源码。</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ContextLoaderListener</span> <span class="kd">extends</span> <span class="n">ContextLoader</span> <span class="kd">implements</span> <span class="n">ServletContextListener</span> <span class="o">{</span>
+
+	<span class="kd">public</span> <span class="nf">ContextLoaderListener</span><span class="o">()</span> <span class="o">{</span>
+	<span class="o">}</span>
+
+
+	<span class="kd">public</span> <span class="nf">ContextLoaderListener</span><span class="o">(</span><span class="n">WebApplicationContext</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+		<span class="kd">super</span><span class="o">(</span><span class="n">context</span><span class="o">);</span>
+	<span class="o">}</span>
+
+
+	<span class="cm">/**
+	 * Initialize the root web application context.
+	 */</span>
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">contextInitialized</span><span class="o">(</span><span class="n">ServletContextEvent</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">initWebApplicationContext</span><span class="o">(</span><span class="n">event</span><span class="o">.</span><span class="na">getServletContext</span><span class="o">());</span>
+	<span class="o">}</span>
+
+
+	<span class="cm">/**
+	 * Close the root web application context.
+	 */</span>
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">contextDestroyed</span><span class="o">(</span><span class="n">ServletContextEvent</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">closeWebApplicationContext</span><span class="o">(</span><span class="n">event</span><span class="o">.</span><span class="na">getServletContext</span><span class="o">());</span>
+		<span class="n">ContextCleanupListener</span><span class="o">.</span><span class="na">cleanupAttributes</span><span class="o">(</span><span class="n">event</span><span class="o">.</span><span class="na">getServletContext</span><span class="o">());</span>
+	<span class="o">}</span>
+
+<span class="o">}</span>
+</code></pre></div></div>
+<p>ContextLoaderListener的代码很简单，在Servlet启动时，调用initWebApplicationContext方法初始化WebApplicationContext这个web应用上下文；在Servlet销毁时，关闭应用上下文。Spring是怎么初始化web应用上下文的，我们跟踪代码进入initWebApplicationContext方法一探究竟。</p>
+<h3 id="23-initwebapplicationcontext-分析">2.3 initWebApplicationContext 分析</h3>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="n">WebApplicationContext</span> <span class="nf">initWebApplicationContext</span><span class="o">(</span><span class="n">ServletContext</span> <span class="n">servletContext</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">servletContext</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="n">WebApplicationContext</span><span class="o">.</span><span class="na">ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE</span><span class="o">)</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalStateException</span><span class="o">(</span>
+					<span class="s">"Cannot initialize context because there is already a root application context present - "</span> <span class="o">+</span>
+					<span class="s">"check whether you have multiple ContextLoader* definitions in your web.xml!"</span><span class="o">);</span>
+		<span class="o">}</span>
+
+		<span class="n">Log</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">LogFactory</span><span class="o">.</span><span class="na">getLog</span><span class="o">(</span><span class="n">ContextLoader</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+		<span class="n">servletContext</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="s">"Initializing Spring root WebApplicationContext"</span><span class="o">);</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isInfoEnabled</span><span class="o">())</span> <span class="o">{</span>
+			<span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"Root WebApplicationContext: initialization started"</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="kt">long</span> <span class="n">startTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+
+		<span class="k">try</span> <span class="o">{</span>
+			<span class="c1">// Store context in local instance variable, to guarantee that</span>
+			<span class="c1">// it is available on ServletContext shutdown.</span>
+			<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">context</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+				<span class="k">this</span><span class="o">.</span><span class="na">context</span> <span class="o">=</span> <span class="n">createWebApplicationContext</span><span class="o">(</span><span class="n">servletContext</span><span class="o">);</span>
+			<span class="o">}</span>
+			<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">context</span> <span class="k">instanceof</span> <span class="n">ConfigurableWebApplicationContext</span><span class="o">)</span> <span class="o">{</span>
+				<span class="n">ConfigurableWebApplicationContext</span> <span class="n">cwac</span> <span class="o">=</span> <span class="o">(</span><span class="n">ConfigurableWebApplicationContext</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">context</span><span class="o">;</span>
+				<span class="k">if</span> <span class="o">(!</span><span class="n">cwac</span><span class="o">.</span><span class="na">isActive</span><span class="o">())</span> <span class="o">{</span>
+					<span class="c1">// The context has not yet been refreshed -&gt; provide services such as</span>
+					<span class="c1">// setting the parent context, setting the application context id, etc</span>
+					<span class="k">if</span> <span class="o">(</span><span class="n">cwac</span><span class="o">.</span><span class="na">getParent</span><span class="o">()</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+						<span class="c1">// The context instance was injected without an explicit parent -&gt;</span>
+						<span class="c1">// determine parent for root web application context, if any.</span>
+						<span class="n">ApplicationContext</span> <span class="n">parent</span> <span class="o">=</span> <span class="n">loadParentContext</span><span class="o">(</span><span class="n">servletContext</span><span class="o">);</span>
+						<span class="n">cwac</span><span class="o">.</span><span class="na">setParent</span><span class="o">(</span><span class="n">parent</span><span class="o">);</span>
+					<span class="o">}</span>
+					<span class="n">configureAndRefreshWebApplicationContext</span><span class="o">(</span><span class="n">cwac</span><span class="o">,</span> <span class="n">servletContext</span><span class="o">);</span>
+				<span class="o">}</span>
+			<span class="o">}</span>
+			<span class="n">servletContext</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="n">WebApplicationContext</span><span class="o">.</span><span class="na">ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">context</span><span class="o">);</span>
+
+			<span class="n">ClassLoader</span> <span class="n">ccl</span> <span class="o">=</span> <span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">getContextClassLoader</span><span class="o">();</span>
+			<span class="k">if</span> <span class="o">(</span><span class="n">ccl</span> <span class="o">==</span> <span class="n">ContextLoader</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getClassLoader</span><span class="o">())</span> <span class="o">{</span>
+				<span class="n">currentContext</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">context</span><span class="o">;</span>
+			<span class="o">}</span>
+			<span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">ccl</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+				<span class="n">currentContextPerThread</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">ccl</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">context</span><span class="o">);</span>
+			<span class="o">}</span>
+
+			<span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+				<span class="n">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Published root WebApplicationContext as ServletContext attribute with name ["</span> <span class="o">+</span>
+						<span class="n">WebApplicationContext</span><span class="o">.</span><span class="na">ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE</span> <span class="o">+</span> <span class="s">"]"</span><span class="o">);</span>
+			<span class="o">}</span>
+			<span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isInfoEnabled</span><span class="o">())</span> <span class="o">{</span>
+				<span class="kt">long</span> <span class="n">elapsedTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">startTime</span><span class="o">;</span>
+				<span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"Root WebApplicationContext: initialization completed in "</span> <span class="o">+</span> <span class="n">elapsedTime</span> <span class="o">+</span> <span class="s">" ms"</span><span class="o">);</span>
+			<span class="o">}</span>
+
+			<span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">context</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="k">catch</span> <span class="o">(</span><span class="n">RuntimeException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"Context initialization failed"</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+			<span class="n">servletContext</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="n">WebApplicationContext</span><span class="o">.</span><span class="na">ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+			<span class="k">throw</span> <span class="n">ex</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="k">catch</span> <span class="o">(</span><span class="n">Error</span> <span class="n">err</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"Context initialization failed"</span><span class="o">,</span> <span class="n">err</span><span class="o">);</span>
+			<span class="n">servletContext</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="n">WebApplicationContext</span><span class="o">.</span><span class="na">ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE</span><span class="o">,</span> <span class="n">err</span><span class="o">);</span>
+			<span class="k">throw</span> <span class="n">err</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+</code></pre></div></div>
+<p>initWebApplicationContext方法一共做了三件事：</p>
+<h5 id="1-如果thiscontext为null-则创建webapplicationcontext">1. 如果this.context为null, 则创建WebApplicationContext</h5>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">context</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">this</span><span class="o">.</span><span class="na">context</span> <span class="o">=</span> <span class="n">createWebApplicationContext</span><span class="o">(</span><span class="n">servletContext</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>我们在web.xml里，只配置了一个Listener，所以在ContextLoaderListener之前没有创建过WebApplicationContext，固这里this.context为null，所以会创建WebApplicationContext。</p>
+<h5 id="2-如果thiscontext是configurablewebapplicationcontext的实例并且没有刷新过webapplicationcontext则配置并刷新webapplicationcontext">2. 如果this.context是ConfigurableWebApplicationContext的实例，并且没有刷新过WebApplicationContext，则配置并刷新WebApplicationContext。</h5>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">context</span> <span class="k">instanceof</span> <span class="n">ConfigurableWebApplicationContext</span><span class="o">)</span> <span class="o">{</span>
+	<span class="n">ConfigurableWebApplicationContext</span> <span class="n">cwac</span> <span class="o">=</span> <span class="o">(</span><span class="n">ConfigurableWebApplicationContext</span><span class="o">)</span> <span class="k">this</span><span class="o">.</span><span class="na">context</span><span class="o">;</span>
+	<span class="k">if</span> <span class="o">(!</span><span class="n">cwac</span><span class="o">.</span><span class="na">isActive</span><span class="o">())</span> <span class="o">{</span>
+		<span class="c1">// The context has not yet been refreshed -&gt; provide services such as</span>
+		<span class="c1">// setting the parent context, setting the application context id, etc</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">cwac</span><span class="o">.</span><span class="na">getParent</span><span class="o">()</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+			<span class="c1">// The context instance was injected without an explicit parent -&gt;</span>
+			<span class="c1">// determine parent for root web application context, if any.</span>
+			<span class="n">ApplicationContext</span> <span class="n">parent</span> <span class="o">=</span> <span class="n">loadParentContext</span><span class="o">(</span><span class="n">servletContext</span><span class="o">);</span>
+			<span class="n">cwac</span><span class="o">.</span><span class="na">setParent</span><span class="o">(</span><span class="n">parent</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="n">configureAndRefreshWebApplicationContext</span><span class="o">(</span><span class="n">cwac</span><span class="o">,</span> <span class="n">servletContext</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>什么意思呢？首先，我们看看this.context的起继承关系 。</p>
+
+<p><img src="http://localhost:4000/assets/blog-img/2017-11-22-ContextLoaderListener-And-DispatcherServlet/2.png" alt="" /></p>
+
+<p>this.contexnt的类型是WebApplicationContext， 可以看到WebApplicationContext是个接口，它继承了BeanFactory。this.context是Spring的IoC容器，所以下面的配置和刷新应用上下文就不足为奇了，因为它要解析，注入bean。所以configureAndRefreshWebApplicationContext方法，会完成bean解析，加载，注入的过程。现在我们知道了WebApplicationContext是一个接口，这里的this.context到底会是什么那个具体的实例呢？其实，这里的this.context是XmlWebApplicationContext的具体实例。我们看一下XmlWebApplicationContext的继承关系。</p>
+
+<p><img src="http://localhost:4000/assets/blog-img/2017-11-22-ContextLoaderListener-And-DispatcherServlet/3.png" alt="" /></p>
+
+<p>可以看到，XmlWebApplicationContext实现了ConfigurableWebApplicationContext 接口，ConfigurableWebApplicationContext 继承了WebApplicationContext。继承关系理清楚了，这里的代码也就很容易看懂了。</p>
+
+<h5 id="3-将webapplicationcontext放入servletcontext中供后续流程使用">3. 将WebApplicationContext放入servletContext中，供后续流程使用</h5>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">servletContext</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="n">WebApplicationContext</span><span class="o">.</span><span class="na">ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">context</span><span class="o">);</span>
+</code></pre></div></div>
+<p>这里讲this.context放入servletContext中，后续的DispatcherServlet会从servletContext取出该容器，作为其创建的容器的父容器。</p>
+
+<h3 id="24-configureandrefreshwebapplicationcontext-分析">2.4 configureAndRefreshWebApplicationContext 分析</h3>
+<p>现在我们进入configureAndRefreshWebApplicationContext方法，看看是如何配置和刷新上下文的。</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">configureAndRefreshWebApplicationContext</span><span class="o">(</span><span class="n">ConfigurableWebApplicationContext</span> <span class="n">wac</span><span class="o">,</span> <span class="n">ServletContext</span> <span class="n">sc</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">ObjectUtils</span><span class="o">.</span><span class="na">identityToString</span><span class="o">(</span><span class="n">wac</span><span class="o">).</span><span class="na">equals</span><span class="o">(</span><span class="n">wac</span><span class="o">.</span><span class="na">getId</span><span class="o">()))</span> <span class="o">{</span>
+		<span class="c1">// The application context id is still set to its original default value</span>
+		<span class="c1">// -&gt; assign a more useful id based on available information</span>
+		<span class="n">String</span> <span class="n">idParam</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">getInitParameter</span><span class="o">(</span><span class="n">CONTEXT_ID_PARAM</span><span class="o">);</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">idParam</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">wac</span><span class="o">.</span><span class="na">setId</span><span class="o">(</span><span class="n">idParam</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="o">{</span>
+			<span class="c1">// Generate default id...</span>
+			<span class="n">wac</span><span class="o">.</span><span class="na">setId</span><span class="o">(</span><span class="n">ConfigurableWebApplicationContext</span><span class="o">.</span><span class="na">APPLICATION_CONTEXT_ID_PREFIX</span> <span class="o">+</span>
+					<span class="n">ObjectUtils</span><span class="o">.</span><span class="na">getDisplayString</span><span class="o">(</span><span class="n">sc</span><span class="o">.</span><span class="na">getContextPath</span><span class="o">()));</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+
+	<span class="n">wac</span><span class="o">.</span><span class="na">setServletContext</span><span class="o">(</span><span class="n">sc</span><span class="o">);</span>
+	<span class="n">String</span> <span class="n">configLocationParam</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">getInitParameter</span><span class="o">(</span><span class="n">CONFIG_LOCATION_PARAM</span><span class="o">);</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">configLocationParam</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">wac</span><span class="o">.</span><span class="na">setConfigLocation</span><span class="o">(</span><span class="n">configLocationParam</span><span class="o">);</span>
+	<span class="o">}</span>
+
+	<span class="c1">// The wac environment's #initPropertySources will be called in any case when the context</span>
+	<span class="c1">// is refreshed; do it eagerly here to ensure servlet property sources are in place for</span>
+	<span class="c1">// use in any post-processing or initialization that occurs below prior to #refresh</span>
+	<span class="n">ConfigurableEnvironment</span> <span class="n">env</span> <span class="o">=</span> <span class="n">wac</span><span class="o">.</span><span class="na">getEnvironment</span><span class="o">();</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">env</span> <span class="k">instanceof</span> <span class="n">ConfigurableWebEnvironment</span><span class="o">)</span> <span class="o">{</span>
+		<span class="o">((</span><span class="n">ConfigurableWebEnvironment</span><span class="o">)</span> <span class="n">env</span><span class="o">).</span><span class="na">initPropertySources</span><span class="o">(</span><span class="n">sc</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+	<span class="o">}</span>
+
+	<span class="n">customizeContext</span><span class="o">(</span><span class="n">sc</span><span class="o">,</span> <span class="n">wac</span><span class="o">);</span>
+	<span class="n">wac</span><span class="o">.</span><span class="na">refresh</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<h5 id="方法进来首先检查是否设置过id如果没有设置过id那么就设置容器id">方法进来首先检查是否设置过id，如果没有设置过id，那么就设置容器id。</h5>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="o">(</span><span class="n">ObjectUtils</span><span class="o">.</span><span class="na">identityToString</span><span class="o">(</span><span class="n">wac</span><span class="o">).</span><span class="na">equals</span><span class="o">(</span><span class="n">wac</span><span class="o">.</span><span class="na">getId</span><span class="o">()))</span> <span class="o">{</span>
+	<span class="c1">// The application context id is still set to its original default value</span>
+	<span class="c1">// -&gt; assign a more useful id based on available information</span>
+	<span class="n">String</span> <span class="n">idParam</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">getInitParameter</span><span class="o">(</span><span class="n">CONTEXT_ID_PARAM</span><span class="o">);</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">idParam</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">wac</span><span class="o">.</span><span class="na">setId</span><span class="o">(</span><span class="n">idParam</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="o">{</span>
+		<span class="c1">// Generate default id...</span>
+		<span class="n">wac</span><span class="o">.</span><span class="na">setId</span><span class="o">(</span><span class="n">ConfigurableWebApplicationContext</span><span class="o">.</span><span class="na">APPLICATION_CONTEXT_ID_PREFIX</span> <span class="o">+</span>
+				<span class="n">ObjectUtils</span><span class="o">.</span><span class="na">getDisplayString</span><span class="o">(</span><span class="n">sc</span><span class="o">.</span><span class="na">getContextPath</span><span class="o">()));</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>容器id优先从配置文web.xml中获取，如果配置文件配置了容器id，那个就使用配置的容器id，否则使用默认生成的容器id。</p>
+<h5 id="然后是获取spring配置文件配置文件也是我们在webxml配置的context-param">然后是获取spring配置文件。配置文件也是我们在web.xml配置的context-param</h5>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">String</span> <span class="n">configLocationParam</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">getInitParameter</span><span class="o">(</span><span class="n">CONFIG_LOCATION_PARAM</span><span class="o">);</span>
+<span class="k">if</span> <span class="o">(</span><span class="n">configLocationParam</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+	<span class="n">wac</span><span class="o">.</span><span class="na">setConfigLocation</span><span class="o">(</span><span class="n">configLocationParam</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;context-param&gt;</span>
+    <span class="nt">&lt;param-name&gt;</span>contextConfigLocation<span class="nt">&lt;/param-name&gt;</span>
+    <span class="nt">&lt;param-value&gt;</span>classpath*:META-INF/spring/*.xml<span class="nt">&lt;/param-value&gt;</span>
+<span class="nt">&lt;/context-param&gt;</span>
+</code></pre></div></div>
+<p>Spring的环境配置，暂时不深入了解，后续在学习Spring的bean装配时在介绍。</p>
+
+<h5 id="接下来是一个扩展点定制上下文在容器刷新之前给用户一个机会可以做一些事情">接下来是一个扩展点————定制上下文，在容器刷新之前，给用户一个机会，可以做一些事情。</h5>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>customizeContext(sc, wac);
+</code></pre></div></div>
+<p>跟进去看看</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">customizeContext</span><span class="o">(</span><span class="n">ServletContext</span> <span class="n">sc</span><span class="o">,</span> <span class="n">ConfigurableWebApplicationContext</span> <span class="n">wac</span><span class="o">)</span> <span class="o">{</span>
+	<span class="n">List</span><span class="o">&lt;</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">ApplicationContextInitializer</span><span class="o">&lt;</span><span class="n">ConfigurableApplicationContext</span><span class="o">&gt;&gt;&gt;</span> <span class="n">initializerClasses</span> <span class="o">=</span>
+			<span class="n">determineContextInitializerClasses</span><span class="o">(</span><span class="n">sc</span><span class="o">);</span>
+
+	<span class="k">for</span> <span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">ApplicationContextInitializer</span><span class="o">&lt;</span><span class="n">ConfigurableApplicationContext</span><span class="o">&gt;&gt;</span> <span class="n">initializerClass</span> <span class="o">:</span> <span class="n">initializerClasses</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">initializerContextClass</span> <span class="o">=</span>
+				<span class="n">GenericTypeResolver</span><span class="o">.</span><span class="na">resolveTypeArgument</span><span class="o">(</span><span class="n">initializerClass</span><span class="o">,</span> <span class="n">ApplicationContextInitializer</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">initializerContextClass</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">initializerContextClass</span><span class="o">.</span><span class="na">isInstance</span><span class="o">(</span><span class="n">wac</span><span class="o">))</span> <span class="o">{</span>
+			<span class="k">throw</span> <span class="k">new</span> <span class="nf">ApplicationContextException</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span>
+					<span class="s">"Could not apply context initializer [%s] since its generic parameter [%s] "</span> <span class="o">+</span>
+					<span class="s">"is not assignable from the type of application context used by this "</span> <span class="o">+</span>
+					<span class="s">"context loader: [%s]"</span><span class="o">,</span> <span class="n">initializerClass</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span> <span class="n">initializerContextClass</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span>
+					<span class="n">wac</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getName</span><span class="o">()));</span>
+		<span class="o">}</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">contextInitializers</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">BeanUtils</span><span class="o">.</span><span class="na">instantiateClass</span><span class="o">(</span><span class="n">initializerClass</span><span class="o">));</span>
+	<span class="o">}</span>
+
+	<span class="n">AnnotationAwareOrderComparator</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">contextInitializers</span><span class="o">);</span>
+	<span class="k">for</span> <span class="o">(</span><span class="n">ApplicationContextInitializer</span><span class="o">&lt;</span><span class="n">ConfigurableApplicationContext</span><span class="o">&gt;</span> <span class="n">initializer</span> <span class="o">:</span> <span class="k">this</span><span class="o">.</span><span class="na">contextInitializers</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">initializer</span><span class="o">.</span><span class="na">initialize</span><span class="o">(</span><span class="n">wac</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>怎么定制上下文呢？看代码可以知道，要实现ApplicationContextInitializer接口</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">ApplicationContextInitializer</span><span class="o">&lt;</span><span class="n">C</span> <span class="kd">extends</span> <span class="n">ConfigurableApplicationContext</span><span class="o">&gt;</span> <span class="o">{</span>
+
+	<span class="cm">/**
+	 * Initialize the given application context.
+	 * @param applicationContext the application to configure
+	 */</span>
+	<span class="kt">void</span> <span class="nf">initialize</span><span class="o">(</span><span class="n">C</span> <span class="n">applicationContext</span><span class="o">);</span>
+
+<span class="o">}</span>
+</code></pre></div></div>
+<p>接口就一个初始化方法，传入上下文。实现该接口，自己操作上下文，完成定制。实现了ApplicationContextInitializer接口之后，怎么配置让其生效呢？我们先看看是怎么找实现该接口的类的，进入determineContextInitializerClasses看看。</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protected</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">ApplicationContextInitializer</span><span class="o">&lt;</span><span class="n">ConfigurableApplicationContext</span><span class="o">&gt;&gt;&gt;</span>
+			<span class="nf">determineContextInitializerClasses</span><span class="o">(</span><span class="n">ServletContext</span> <span class="n">servletContext</span><span class="o">)</span> <span class="o">{</span>
+
+	<span class="n">List</span><span class="o">&lt;</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">ApplicationContextInitializer</span><span class="o">&lt;</span><span class="n">ConfigurableApplicationContext</span><span class="o">&gt;&gt;&gt;</span> <span class="n">classes</span> <span class="o">=</span>
+			<span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">ApplicationContextInitializer</span><span class="o">&lt;</span><span class="n">ConfigurableApplicationContext</span><span class="o">&gt;&gt;&gt;();</span>
+
+	<span class="n">String</span> <span class="n">globalClassNames</span> <span class="o">=</span> <span class="n">servletContext</span><span class="o">.</span><span class="na">getInitParameter</span><span class="o">(</span><span class="n">GLOBAL_INITIALIZER_CLASSES_PARAM</span><span class="o">);</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">globalClassNames</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">className</span> <span class="o">:</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">tokenizeToStringArray</span><span class="o">(</span><span class="n">globalClassNames</span><span class="o">,</span> <span class="n">INIT_PARAM_DELIMITERS</span><span class="o">))</span> <span class="o">{</span>
+			<span class="n">classes</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">loadInitializerClass</span><span class="o">(</span><span class="n">className</span><span class="o">));</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+
+	<span class="n">String</span> <span class="n">localClassNames</span> <span class="o">=</span> <span class="n">servletContext</span><span class="o">.</span><span class="na">getInitParameter</span><span class="o">(</span><span class="n">CONTEXT_INITIALIZER_CLASSES_PARAM</span><span class="o">);</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">localClassNames</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">className</span> <span class="o">:</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">tokenizeToStringArray</span><span class="o">(</span><span class="n">localClassNames</span><span class="o">,</span> <span class="n">INIT_PARAM_DELIMITERS</span><span class="o">))</span> <span class="o">{</span>
+			<span class="n">classes</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">loadInitializerClass</span><span class="o">(</span><span class="n">className</span><span class="o">));</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+
+	<span class="k">return</span> <span class="n">classes</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>可以看到，这里是通过 servletContext.getInitParameter(GLOBAL_INITIALIZER_CLASSES_PARAM)和servletContext.getInitParameter(CONTEXT_INITIALIZER_CLASSES_PARAM) 获取类名，和Spring配置文件一样，也是在web.xml中配置的。</p>
+
+<h5 id="最后是刷新上下文">最后是刷新上下文。</h5>
+<p>这里的刷新上下文，其实就是Spring读取配置稳定，解析bean定义，注册BeanDefinition，实例化bean，完成注入的过程，在此暂不深入。</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">wac</span><span class="o">.</span><span class="na">refresh</span><span class="o">();</span>
+</code></pre></div></div>
+
+<h2 id="3-dispatcherservlet分析">3. DispatcherServlet分析</h2>
+<h3 id="31继承关系">3.1继承关系</h3>
+<p><img src="http://localhost:4000/assets/blog-img/2017-11-22-ContextLoaderListener-And-DispatcherServlet/4.png" alt="" />
+DispatcherServlet间接实现了Servlet接口。在初始化阶段，会调用Servlet的init()方法，这是Servlet的入口，接下来我们找到入口，从入口分析。</p>
+
+<h3 id="32-追根溯源-servlet的init">3.2 追根溯源 Servlet的init()</h3>
+<p>本次分析的目的是研究DispatcherServlet的上下文和ContextLoaderListener的上下文是如何初始化和关联起来的，其它逻辑不是本文重点，将会被忽略。</p>
+
+<p>在GenericServlet类中实现了Servlet接口的init方法</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">(</span><span class="n">ServletConfig</span> <span class="n">config</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ServletException</span> <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">config</span> <span class="o">=</span> <span class="n">config</span><span class="o">;</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">init</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>GenericServlet的init(ServletConfig config)方法除了设置了config并没有干其它的逻辑，而是调用了自身的init()方法，将具体逻辑委托给自己的子类处理。我们接着找谁实现了init()方法。在HttpServletBean类中找到了init()方法，看一下代码</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">final</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">ServletException</span> <span class="o">{</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+		<span class="n">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Initializing servlet '"</span> <span class="o">+</span> <span class="n">getServletName</span><span class="o">()</span> <span class="o">+</span> <span class="s">"'"</span><span class="o">);</span>
+	<span class="o">}</span>
+
+	<span class="c1">// Set bean properties from init parameters.</span>
+	<span class="n">PropertyValues</span> <span class="n">pvs</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ServletConfigPropertyValues</span><span class="o">(</span><span class="n">getServletConfig</span><span class="o">(),</span> <span class="k">this</span><span class="o">.</span><span class="na">requiredProperties</span><span class="o">);</span>
+	<span class="k">if</span> <span class="o">(!</span><span class="n">pvs</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+		<span class="k">try</span> <span class="o">{</span>
+			<span class="n">BeanWrapper</span> <span class="n">bw</span> <span class="o">=</span> <span class="n">PropertyAccessorFactory</span><span class="o">.</span><span class="na">forBeanPropertyAccess</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+			<span class="n">ResourceLoader</span> <span class="n">resourceLoader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ServletContextResourceLoader</span><span class="o">(</span><span class="n">getServletContext</span><span class="o">());</span>
+			<span class="n">bw</span><span class="o">.</span><span class="na">registerCustomEditor</span><span class="o">(</span><span class="n">Resource</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="n">ResourceEditor</span><span class="o">(</span><span class="n">resourceLoader</span><span class="o">,</span> <span class="n">getEnvironment</span><span class="o">()));</span>
+			<span class="n">initBeanWrapper</span><span class="o">(</span><span class="n">bw</span><span class="o">);</span>
+			<span class="n">bw</span><span class="o">.</span><span class="na">setPropertyValues</span><span class="o">(</span><span class="n">pvs</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">catch</span> <span class="o">(</span><span class="n">BeansException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isErrorEnabled</span><span class="o">())</span> <span class="o">{</span>
+				<span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"Failed to set bean properties on servlet '"</span> <span class="o">+</span> <span class="n">getServletName</span><span class="o">()</span> <span class="o">+</span> <span class="s">"'"</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+			<span class="o">}</span>
+			<span class="k">throw</span> <span class="n">ex</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+
+	<span class="c1">// Let subclasses do whatever initialization they like.</span>
+	<span class="n">initServletBean</span><span class="o">();</span>
+
+	<span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+		<span class="n">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Servlet '"</span> <span class="o">+</span> <span class="n">getServletName</span><span class="o">()</span> <span class="o">+</span> <span class="s">"' configured successfully"</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>HttpServletBean的init()方法也没有看到有处理上下文的逻辑，但是看了initServletBean()这个方法，我们继续跟代码。
+在FrameworkServlet类中重写了initServletBean()方法。</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Override</span>
+<span class="kd">protected</span> <span class="kd">final</span> <span class="kt">void</span> <span class="nf">initServletBean</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">ServletException</span> <span class="o">{</span>
+	<span class="n">getServletContext</span><span class="o">().</span><span class="na">log</span><span class="o">(</span><span class="s">"Initializing Spring FrameworkServlet '"</span> <span class="o">+</span> <span class="n">getServletName</span><span class="o">()</span> <span class="o">+</span> <span class="s">"'"</span><span class="o">);</span>
+	<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">logger</span><span class="o">.</span><span class="na">isInfoEnabled</span><span class="o">())</span> <span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"FrameworkServlet '"</span> <span class="o">+</span> <span class="n">getServletName</span><span class="o">()</span> <span class="o">+</span> <span class="s">"': initialization started"</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="kt">long</span> <span class="n">startTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+
+	<span class="k">try</span> <span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">webApplicationContext</span> <span class="o">=</span> <span class="n">initWebApplicationContext</span><span class="o">();</span>
+		<span class="n">initFrameworkServlet</span><span class="o">();</span>
+	<span class="o">}</span>
+	<span class="k">catch</span> <span class="o">(</span><span class="n">ServletException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"Context initialization failed"</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+		<span class="k">throw</span> <span class="n">ex</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">catch</span> <span class="o">(</span><span class="n">RuntimeException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"Context initialization failed"</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+		<span class="k">throw</span> <span class="n">ex</span><span class="o">;</span>
+	<span class="o">}</span>
+
+	<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">logger</span><span class="o">.</span><span class="na">isInfoEnabled</span><span class="o">())</span> <span class="o">{</span>
+		<span class="kt">long</span> <span class="n">elapsedTime</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">startTime</span><span class="o">;</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"FrameworkServlet '"</span> <span class="o">+</span> <span class="n">getServletName</span><span class="o">()</span> <span class="o">+</span> <span class="s">"': initialization completed in "</span> <span class="o">+</span>
+				<span class="n">elapsedTime</span> <span class="o">+</span> <span class="s">" ms"</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>在这里终于看到了与上下文有关的逻辑————initWebApplicationContext()方法，跟之。</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protected</span> <span class="n">WebApplicationContext</span> <span class="nf">initWebApplicationContext</span><span class="o">()</span> <span class="o">{</span>
+	<span class="n">WebApplicationContext</span> <span class="n">rootContext</span> <span class="o">=</span>
+			<span class="n">WebApplicationContextUtils</span><span class="o">.</span><span class="na">getWebApplicationContext</span><span class="o">(</span><span class="n">getServletContext</span><span class="o">());</span>
+	<span class="n">WebApplicationContext</span> <span class="n">wac</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+	<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">webApplicationContext</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">// A context instance was injected at construction time -&gt; use it</span>
+		<span class="n">wac</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">webApplicationContext</span><span class="o">;</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">wac</span> <span class="k">instanceof</span> <span class="n">ConfigurableWebApplicationContext</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">ConfigurableWebApplicationContext</span> <span class="n">cwac</span> <span class="o">=</span> <span class="o">(</span><span class="n">ConfigurableWebApplicationContext</span><span class="o">)</span> <span class="n">wac</span><span class="o">;</span>
+			<span class="k">if</span> <span class="o">(!</span><span class="n">cwac</span><span class="o">.</span><span class="na">isActive</span><span class="o">())</span> <span class="o">{</span>
+				<span class="c1">// The context has not yet been refreshed -&gt; provide services such as</span>
+				<span class="c1">// setting the parent context, setting the application context id, etc</span>
+				<span class="k">if</span> <span class="o">(</span><span class="n">cwac</span><span class="o">.</span><span class="na">getParent</span><span class="o">()</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+					<span class="c1">// The context instance was injected without an explicit parent -&gt; set</span>
+					<span class="c1">// the root application context (if any; may be null) as the parent</span>
+					<span class="n">cwac</span><span class="o">.</span><span class="na">setParent</span><span class="o">(</span><span class="n">rootContext</span><span class="o">);</span>
+				<span class="o">}</span>
+				<span class="n">configureAndRefreshWebApplicationContext</span><span class="o">(</span><span class="n">cwac</span><span class="o">);</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">wac</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">// No context instance was injected at construction time -&gt; see if one</span>
+		<span class="c1">// has been registered in the servlet context. If one exists, it is assumed</span>
+		<span class="c1">// that the parent context (if any) has already been set and that the</span>
+		<span class="c1">// user has performed any initialization such as setting the context id</span>
+		<span class="n">wac</span> <span class="o">=</span> <span class="n">findWebApplicationContext</span><span class="o">();</span>
+	<span class="o">}</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">wac</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">// No context instance is defined for this servlet -&gt; create a local one</span>
+		<span class="n">wac</span> <span class="o">=</span> <span class="n">createWebApplicationContext</span><span class="o">(</span><span class="n">rootContext</span><span class="o">);</span>
+	<span class="o">}</span>
+
+	<span class="k">if</span> <span class="o">(!</span><span class="k">this</span><span class="o">.</span><span class="na">refreshEventReceived</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">// Either the context is not a ConfigurableApplicationContext with refresh</span>
+		<span class="c1">// support or the context injected at construction time had already been</span>
+		<span class="c1">// refreshed -&gt; trigger initial onRefresh manually here.</span>
+		<span class="n">onRefresh</span><span class="o">(</span><span class="n">wac</span><span class="o">);</span>
+	<span class="o">}</span>
+
+	<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">publishContext</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">// Publish the context as a servlet context attribute.</span>
+		<span class="n">String</span> <span class="n">attrName</span> <span class="o">=</span> <span class="n">getServletContextAttributeName</span><span class="o">();</span>
+		<span class="n">getServletContext</span><span class="o">().</span><span class="na">setAttribute</span><span class="o">(</span><span class="n">attrName</span><span class="o">,</span> <span class="n">wac</span><span class="o">);</span>
+		<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">logger</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Published WebApplicationContext of servlet '"</span> <span class="o">+</span> <span class="n">getServletName</span><span class="o">()</span> <span class="o">+</span>
+					<span class="s">"' as ServletContext attribute with name ["</span> <span class="o">+</span> <span class="n">attrName</span> <span class="o">+</span> <span class="s">"]"</span><span class="o">);</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+
+	<span class="k">return</span> <span class="n">wac</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>我们看我们感兴趣的逻辑。</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>WebApplicationContext rootContext =
+			WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+WebApplicationContext wac = null;
+.
+.
+.
+if (wac == null) {
+	// No context instance is defined for this servlet -&gt; create a local one
+	wac = createWebApplicationContext(rootContext);
+}
+</code></pre></div></div>
+<p>这里获取根上下文rootContext，并将rootContext作为参数，创建WebApplicationContext。这里获取的rootContext就是在ContextLoaderListener设置的WebApplicationContext。Talk is cheap. Show me the code.</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">static</span> <span class="n">WebApplicationContext</span> <span class="nf">getWebApplicationContext</span><span class="o">(</span><span class="n">ServletContext</span> <span class="n">sc</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">return</span> <span class="nf">getWebApplicationContext</span><span class="o">(</span><span class="n">sc</span><span class="o">,</span> <span class="n">WebApplicationContext</span><span class="o">.</span><span class="na">ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>看到 WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE，我们回忆一下ContextLoaderListener是怎么设置上下文到ServletContext的。</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">servletContext</span><span class="o">.</span><span class="na">setAttribute</span><span class="o">(</span><span class="n">WebApplicationContext</span><span class="o">.</span><span class="na">ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">context</span><span class="o">);</span>
+</code></pre></div></div>
+<p>证据确凿。 <br />
+再来看createWebApplicationContext(rootContext)</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protected</span> <span class="n">WebApplicationContext</span> <span class="nf">createWebApplicationContext</span><span class="o">(</span><span class="n">WebApplicationContext</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">return</span> <span class="nf">createWebApplicationContext</span><span class="o">((</span><span class="n">ApplicationContext</span><span class="o">)</span> <span class="n">parent</span><span class="o">);</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protected</span> <span class="n">WebApplicationContext</span> <span class="nf">createWebApplicationContext</span><span class="o">(</span><span class="n">ApplicationContext</span> <span class="n">parent</span><span class="o">)</span> <span class="o">{</span>
+	<span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">contextClass</span> <span class="o">=</span> <span class="n">getContextClass</span><span class="o">();</span>
+	<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">logger</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Servlet with name '"</span> <span class="o">+</span> <span class="n">getServletName</span><span class="o">()</span> <span class="o">+</span>
+				<span class="s">"' will try to create custom WebApplicationContext context of class '"</span> <span class="o">+</span>
+				<span class="n">contextClass</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">"'"</span> <span class="o">+</span> <span class="s">", using parent context ["</span> <span class="o">+</span> <span class="n">parent</span> <span class="o">+</span> <span class="s">"]"</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">if</span> <span class="o">(!</span><span class="n">ConfigurableWebApplicationContext</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">isAssignableFrom</span><span class="o">(</span><span class="n">contextClass</span><span class="o">))</span> <span class="o">{</span>
+		<span class="k">throw</span> <span class="k">new</span> <span class="nf">ApplicationContextException</span><span class="o">(</span>
+				<span class="s">"Fatal initialization error in servlet with name '"</span> <span class="o">+</span> <span class="n">getServletName</span><span class="o">()</span> <span class="o">+</span>
+				<span class="s">"': custom WebApplicationContext class ["</span> <span class="o">+</span> <span class="n">contextClass</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span>
+				<span class="s">"] is not of type ConfigurableWebApplicationContext"</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="n">ConfigurableWebApplicationContext</span> <span class="n">wac</span> <span class="o">=</span>
+			<span class="o">(</span><span class="n">ConfigurableWebApplicationContext</span><span class="o">)</span> <span class="n">BeanUtils</span><span class="o">.</span><span class="na">instantiateClass</span><span class="o">(</span><span class="n">contextClass</span><span class="o">);</span>
+
+	<span class="n">wac</span><span class="o">.</span><span class="na">setEnvironment</span><span class="o">(</span><span class="n">getEnvironment</span><span class="o">());</span>
+	<span class="n">wac</span><span class="o">.</span><span class="na">setParent</span><span class="o">(</span><span class="n">parent</span><span class="o">);</span>
+	<span class="n">wac</span><span class="o">.</span><span class="na">setConfigLocation</span><span class="o">(</span><span class="n">getContextConfigLocation</span><span class="o">());</span>
+
+	<span class="n">configureAndRefreshWebApplicationContext</span><span class="o">(</span><span class="n">wac</span><span class="o">);</span>
+
+	<span class="k">return</span> <span class="n">wac</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>看到createWebApplicationContext方法的代码，是不是似曾相识的感觉？这和ContextLoaderListener的 initWebApplicationContext方法的逻辑是不是很相似？</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">wac</span><span class="o">.</span><span class="na">setParent</span><span class="o">(</span><span class="n">parent</span><span class="o">);</span>
+</code></pre></div></div>
+<p>我们将目光放在上面一行代码上。这行代码将ContextLoaderListener的创建的WebApplicationContext和DispatcherServlet创建的WebApplicationContext关联了起来，将Web应用上下文的层次体现出来，我们也知道WebApplicationContext其实也是Spring的BeanFactory，所以这里也是设置了Spring Ioc容器的父子关系。最后就是configureAndRefreshWebApplicationContext了，这里就不分析了。</p>
+
+
+  </div>
+
+  
+</article>
+
+
+      <footer class="site-footer">
+        <!-- SVG icons from https://iconmonstr.com -->
+
+        <!-- Github icon -->
+        <span class="my-span-icon">
+          <a href="https://github.com/jylaxp" aria-label="jylaxp's GitHub" title="jylaxp's GitHub">
+            <svg class="my-svg-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          </a>
+        </span>
+
+        <!-- Twitter icon
+        <span class="my-span-icon">
+          <a href="https://twitter.com/" aria-label="jylaxp's Twitter" title="jylaxp's Twitter">
+            <svg class="my-svg-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6.066 9.645c.183 4.04-2.83 8.544-8.164 8.544-1.622 0-3.131-.476-4.402-1.291 1.524.18 3.045-.244 4.252-1.189-1.256-.023-2.317-.854-2.684-1.995.451.086.895.061 1.298-.049-1.381-.278-2.335-1.522-2.304-2.853.388.215.83.344 1.301.359-1.279-.855-1.641-2.544-.889-3.835 1.416 1.738 3.533 2.881 5.92 3.001-.419-1.796.944-3.527 2.799-3.527.825 0 1.572.349 2.096.907.654-.128 1.27-.368 1.824-.697-.215.671-.67 1.233-1.263 1.589.581-.07 1.135-.224 1.649-.453-.384.578-.87 1.084-1.433 1.489z"/></svg>
+          </a>
+        </span>
+ -->
+        <!-- RSS icon -->
+        
+        <!-- Contact icon -->
+        
+        
+          <span class="my-span-icon">
+            <a href="/about.html" aria-label="Contact" title="Contact jylaxp">
+              <svg class="my-svg-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 .02c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6.99 6.98l-6.99 5.666-6.991-5.666h13.981zm.01 10h-14v-8.505l7 5.673 7-5.672v8.504z"/></svg>
+            </a>
+          </span>
+        
+
+      </footer>
+    </section>
+
+    
+  </body>
+</html>

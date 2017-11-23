@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <!-- Non social metatags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="theme-color" content="#157878">
+
+    
+
+    <title>Java socks5代理</title>
+
+    
+      <!-- Update your html tag to include the itemscope and itemtype attributes. -->
+<html itemscope itemtype="http://schema.org/Article">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Place this data between the <head> tags of your website -->
+
+  <meta name="author" content="jylaxp">
+
+<meta name="description" content="``` Socks5Setting package com.mysocket.proxy;" />
+
+
+
+
+
+<!-- Schema.org markup for Google+ -->
+<meta itemprop="name" content="Java socks5代理">
+<meta itemprop="description" content="``` Socks5Setting package com.mysocket.proxy;">
+
+  <meta itemprop="image" content="http://localhost:4000">
+
+
+<!-- Twitter Card data -->
+<meta name="twitter:card" content="summary_large_image">
+
+
+
+<meta name="twitter:title" content="Java socks5代理">
+<meta name="twitter:description" content="``` Socks5Setting package com.mysocket.proxy;">
+
+
+
+<!-- Twitter summary card with large image must be at least 280x150px -->
+
+  <meta name="twitter:image:src" content="http://localhost:4000">
+  <meta property="twitter:image" content="http://localhost:4000">
+
+<meta property="twitter:url" content="http://localhost:4000/2017/02/17/java-socks5.html">
+
+<!-- Open Graph data -->
+<meta property="og:title" content="Java socks5代理" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:4000/2017/02/17/java-socks5.html" />
+
+  <meta property="og:image" content="http://localhost:4000" />
+
+<meta property="og:description" content="``` Socks5Setting package com.mysocket.proxy;" />
+<meta property="og:site_name" content="jylaxp's Blog" />
+
+  <meta property="article:published_time" content="2017-02-17T00:00:00+08:00" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+    
+
+    <link rel="canonical" href="http://localhost:4000/2017/02/17/java-socks5.html">
+
+    
+
+    <link rel="shortcut icon" href="http://localhost:4000/favicon.ico">
+    <meta name="robots" content="noarchive">
+
+    <!-- <link rel="alternate" media="only screen and (max-width: 640px)" href="">
+    <link rel="alternate" media="handheld" href=""> -->
+
+
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+  </head>
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+    
+    
+
+    
+      <a class="site-title" href="/">jylaxp&#39;s Blog</a>
+    
+
+    
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger">
+          
+            
+            
+              
+              
+            
+          
+            
+            
+              
+                <a class="page-link" href="/about.html">About</a>
+              
+            
+          
+            
+            
+              
+                <a class="page-link" href="/contact.html">Contact</a>
+              
+            
+          
+            
+            
+          
+            
+            
+          
+        </div>
+      </nav>
+    
+  </div>
+</header>
+
+
+    
+    
+    
+
+    <section class="page-header">
+      <h1 class="project-name">Java socks5代理</h1>
+      <h2 class="project-tagline"></h2>
+      
+      <!-- Post tagline -->
+      
+        <h2 class="project-date">
+        <time datetime="2017-02-17T00:00:00+08:00" itemprop="datePublished">
+          
+          Feb 17, 2017
+        </time>
+        
+        
+          • <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">jylaxp</span></span>
+        
+        </h2>
+      
+      <!-- End: Post tagline -->
+    </section>
+
+    <section class="main-content">
+
+      <article itemscope itemtype="http://schema.org/BlogPosting">
+
+  <!-- <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Java socks5代理</h1>
+    <p class="post-meta">
+      <time datetime="2017-02-17T00:00:00+08:00" itemprop="datePublished">
+        
+        Feb 17, 2017
+      </time>
+      </p>
+  </header> -->
+
+  <div itemprop="articleBody">
+    <pre><code class="language-Socks5Setting">package com.mysocket.proxy;
+
+/**
+ * Created by jyl25609 on 2017/1/23.
+ */
+public class Socks5Setting {
+    public Socks5Setting() {
+    }
+
+    public Socks5Setting(String hostname, int port) {
+        this.hostname = hostname;
+        this.port = port;
+    }
+
+    public Socks5Setting(String hostname, int port, String username, String password) {
+        this.hostname = hostname;
+        this.port = port;
+        this.username = username;
+        this.password = password;
+    }
+
+    public String getHostname() {
+        return hostname;
+    }
+
+    public void setHostname(String host) {
+        this.hostname = host;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    private String hostname;
+    private int port;
+    private String username;
+    private String password;
+}
+</code></pre>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">mysocket</span><span class="o">.</span><span class="na">proxy</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.io.BufferedOutputStream</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.io.InputStream</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.*</span><span class="o">;</span>
+
+<span class="cm">/**
+ * Created by jyl25609 on 2017/1/23.
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MySocks5</span> <span class="o">{</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">PROTO_VERS4</span> <span class="o">=</span> <span class="mi">4</span><span class="o">;</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">PROTO_VERS</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">DEFAULT_PORT</span> <span class="o">=</span> <span class="mi">1080</span><span class="o">;</span>
+
+    <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">NO_AUTH</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">GSSAPI</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">USER_PASSW</span> <span class="o">=</span> <span class="mi">2</span><span class="o">;</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">NO_METHODS</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+
+    <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">CONNECT</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">BIND</span> <span class="o">=</span> <span class="mi">2</span><span class="o">;</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">UDP_ASSOC</span> <span class="o">=</span> <span class="mi">3</span><span class="o">;</span>
+
+    <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">IPV4</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">DOMAIN_NAME</span> <span class="o">=</span> <span class="mi">3</span><span class="o">;</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">IPV6</span> <span class="o">=</span> <span class="mi">4</span><span class="o">;</span>
+
+    <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">REQUEST_OK</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">GENERAL_FAILURE</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">NOT_ALLOWED</span> <span class="o">=</span> <span class="mi">2</span><span class="o">;</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">NET_UNREACHABLE</span> <span class="o">=</span> <span class="mi">3</span><span class="o">;</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">HOST_UNREACHABLE</span> <span class="o">=</span> <span class="mi">4</span><span class="o">;</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">CONN_REFUSED</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">TTL_EXPIRED</span> <span class="o">=</span> <span class="mi">6</span><span class="o">;</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">CMD_NOT_SUPPORTED</span> <span class="o">=</span> <span class="mi">7</span><span class="o">;</span>
+    <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">ADDR_TYPE_NOT_SUP</span> <span class="o">=</span> <span class="mi">8</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">MySocks5</span><span class="o">()</span> <span class="o">{</span>
+
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">Socket</span> <span class="nf">getProxyedSocket</span><span class="o">(</span><span class="n">String</span> <span class="n">server</span><span class="o">,</span> <span class="kt">int</span> <span class="n">serverPort</span><span class="o">,</span> <span class="n">Socks5Setting</span> <span class="n">socks5Setting</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">getProxyedSocket</span><span class="o">(</span><span class="n">server</span><span class="o">,</span> <span class="n">serverPort</span><span class="o">,</span> <span class="n">socks5Setting</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">Socket</span> <span class="nf">getProxyedSocket</span><span class="o">(</span><span class="n">String</span> <span class="n">server</span><span class="o">,</span> <span class="kt">int</span> <span class="n">serverPort</span><span class="o">,</span> <span class="n">Socks5Setting</span> <span class="n">socks5Setting</span><span class="o">,</span> <span class="kt">int</span> <span class="n">timeout</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">server</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">server</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IOException</span><span class="o">(</span><span class="s">"endpoint is null."</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">socks5Setting</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IOException</span><span class="o">(</span><span class="s">"socks5Setting is null."</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">socks5Setting</span><span class="o">.</span><span class="na">getHostname</span><span class="o">()</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">socks5Setting</span><span class="o">.</span><span class="na">getHostname</span><span class="o">().</span><span class="na">length</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IOException</span><span class="o">(</span><span class="s">"proxy host is null."</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">socks5Setting</span><span class="o">.</span><span class="na">getPort</span><span class="o">()</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IOException</span><span class="o">(</span><span class="s">"proxy port is 0."</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="n">SocketAddress</span> <span class="n">endpoint</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InetSocketAddress</span><span class="o">(</span><span class="n">socks5Setting</span><span class="o">.</span><span class="na">getHostname</span><span class="o">(),</span> <span class="n">socks5Setting</span><span class="o">.</span><span class="na">getPort</span><span class="o">());</span>
+        <span class="n">Socket</span> <span class="n">socket</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Socket</span><span class="o">();</span>
+        <span class="n">socket</span><span class="o">.</span><span class="na">connect</span><span class="o">(</span><span class="n">endpoint</span><span class="o">,</span> <span class="n">timeout</span><span class="o">);</span>
+
+        <span class="n">InetSocketAddress</span> <span class="n">epoint</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InetSocketAddress</span><span class="o">(</span><span class="n">server</span><span class="o">,</span> <span class="n">serverPort</span><span class="o">);</span>
+        <span class="n">BufferedOutputStream</span> <span class="n">out</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedOutputStream</span><span class="o">(</span><span class="n">socket</span><span class="o">.</span><span class="na">getOutputStream</span><span class="o">(),</span> <span class="mi">512</span><span class="o">);</span>
+        <span class="n">InputStream</span> <span class="n">in</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="na">getInputStream</span><span class="o">();</span>
+
+        <span class="c1">// This is SOCKS V5</span>
+        <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">PROTO_VERS</span><span class="o">);</span>
+        <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+        <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">NO_AUTH</span><span class="o">);</span>
+        <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">USER_PASSW</span><span class="o">);</span>
+        <span class="n">out</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
+        <span class="kt">byte</span><span class="o">[]</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">2</span><span class="o">];</span>
+        <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">!=</span> <span class="mi">2</span> <span class="o">||</span> <span class="o">((</span><span class="kt">int</span><span class="o">)</span> <span class="n">data</span><span class="o">[</span><span class="mi">0</span><span class="o">])</span> <span class="o">!=</span> <span class="n">PROTO_VERS</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// it is not sock5</span>
+            <span class="n">socket</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IOException</span><span class="o">(</span><span class="s">"the proxy server is not support SOCKS5."</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(((</span><span class="kt">int</span><span class="o">)</span> <span class="n">data</span><span class="o">[</span><span class="mi">1</span><span class="o">])</span> <span class="o">==</span> <span class="n">NO_METHODS</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">socket</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">SocketException</span><span class="o">(</span><span class="s">"SOCKS : No acceptable methods"</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(!</span><span class="n">authenticate</span><span class="o">(</span><span class="n">data</span><span class="o">[</span><span class="mi">1</span><span class="o">],</span> <span class="n">in</span><span class="o">,</span> <span class="n">out</span><span class="o">,</span> <span class="n">socks5Setting</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">SocketException</span><span class="o">(</span><span class="s">"SOCKS : authentication failed"</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">PROTO_VERS</span><span class="o">);</span>
+        <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">CONNECT</span><span class="o">);</span>
+        <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+        <span class="cm">/* Test for IPV4/IPV6/Unresolved */</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">epoint</span><span class="o">.</span><span class="na">isUnresolved</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">DOMAIN_NAME</span><span class="o">);</span>
+            <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">epoint</span><span class="o">.</span><span class="na">getHostName</span><span class="o">().</span><span class="na">length</span><span class="o">());</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">epoint</span><span class="o">.</span><span class="na">getHostName</span><span class="o">().</span><span class="na">getBytes</span><span class="o">(</span><span class="s">"ISO-8859-1"</span><span class="o">));</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">UnsupportedEncodingException</span> <span class="n">uee</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">assert</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">((</span><span class="n">epoint</span><span class="o">.</span><span class="na">getPort</span><span class="o">()</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="o">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="o">);</span>
+            <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">((</span><span class="n">epoint</span><span class="o">.</span><span class="na">getPort</span><span class="o">()</span> <span class="o">&gt;&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">epoint</span><span class="o">.</span><span class="na">getAddress</span><span class="o">()</span> <span class="k">instanceof</span> <span class="n">Inet6Address</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">IPV6</span><span class="o">);</span>
+            <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">epoint</span><span class="o">.</span><span class="na">getAddress</span><span class="o">().</span><span class="na">getAddress</span><span class="o">());</span>
+            <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">((</span><span class="n">epoint</span><span class="o">.</span><span class="na">getPort</span><span class="o">()</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="o">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="o">);</span>
+            <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">((</span><span class="n">epoint</span><span class="o">.</span><span class="na">getPort</span><span class="o">()</span> <span class="o">&gt;&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">IPV4</span><span class="o">);</span>
+            <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">epoint</span><span class="o">.</span><span class="na">getAddress</span><span class="o">().</span><span class="na">getAddress</span><span class="o">());</span>
+            <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">((</span><span class="n">epoint</span><span class="o">.</span><span class="na">getPort</span><span class="o">()</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="o">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="o">);</span>
+            <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">((</span><span class="n">epoint</span><span class="o">.</span><span class="na">getPort</span><span class="o">()</span> <span class="o">&gt;&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">out</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">4</span><span class="o">];</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">!=</span> <span class="mi">4</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">SocketException</span><span class="o">(</span><span class="s">"Reply from SOCKS server has bad length"</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="n">SocketException</span> <span class="n">ex</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="kt">int</span> <span class="n">len</span><span class="o">;</span>
+        <span class="kt">byte</span><span class="o">[]</span> <span class="n">addr</span><span class="o">;</span>
+        <span class="k">switch</span> <span class="o">(</span><span class="n">data</span><span class="o">[</span><span class="mi">1</span><span class="o">])</span> <span class="o">{</span>
+            <span class="k">case</span> <span class="nl">REQUEST_OK:</span>
+                <span class="c1">// success!</span>
+                <span class="k">switch</span> <span class="o">(</span><span class="n">data</span><span class="o">[</span><span class="mi">3</span><span class="o">])</span> <span class="o">{</span>
+                    <span class="k">case</span> <span class="nl">IPV4:</span>
+                        <span class="n">addr</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">4</span><span class="o">];</span>
+                        <span class="n">i</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">addr</span><span class="o">);</span>
+                        <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">!=</span> <span class="mi">4</span><span class="o">)</span>
+                            <span class="k">throw</span> <span class="k">new</span> <span class="nf">SocketException</span><span class="o">(</span><span class="s">"Reply from SOCKS server badly formatted"</span><span class="o">);</span>
+                        <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">2</span><span class="o">];</span>
+                        <span class="n">i</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+                        <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">!=</span> <span class="mi">2</span><span class="o">)</span>
+                            <span class="k">throw</span> <span class="k">new</span> <span class="nf">SocketException</span><span class="o">(</span><span class="s">"Reply from SOCKS server badly formatted"</span><span class="o">);</span>
+                        <span class="k">break</span><span class="o">;</span>
+                    <span class="k">case</span> <span class="nl">DOMAIN_NAME:</span>
+                        <span class="n">len</span> <span class="o">=</span> <span class="n">data</span><span class="o">[</span><span class="mi">1</span><span class="o">];</span>
+                        <span class="kt">byte</span><span class="o">[]</span> <span class="n">host</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">len</span><span class="o">];</span>
+                        <span class="n">i</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">host</span><span class="o">);</span>
+                        <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">!=</span> <span class="n">len</span><span class="o">)</span>
+                            <span class="k">throw</span> <span class="k">new</span> <span class="nf">SocketException</span><span class="o">(</span><span class="s">"Reply from SOCKS server badly formatted"</span><span class="o">);</span>
+                        <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">2</span><span class="o">];</span>
+                        <span class="n">i</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+                        <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">!=</span> <span class="mi">2</span><span class="o">)</span>
+                            <span class="k">throw</span> <span class="k">new</span> <span class="nf">SocketException</span><span class="o">(</span><span class="s">"Reply from SOCKS server badly formatted"</span><span class="o">);</span>
+                        <span class="k">break</span><span class="o">;</span>
+                    <span class="k">case</span> <span class="nl">IPV6:</span>
+                        <span class="n">len</span> <span class="o">=</span> <span class="n">data</span><span class="o">[</span><span class="mi">1</span><span class="o">];</span>
+                        <span class="n">addr</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="n">len</span><span class="o">];</span>
+                        <span class="n">i</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">addr</span><span class="o">);</span>
+                        <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">!=</span> <span class="n">len</span><span class="o">)</span>
+                            <span class="k">throw</span> <span class="k">new</span> <span class="nf">SocketException</span><span class="o">(</span><span class="s">"Reply from SOCKS server badly formatted"</span><span class="o">);</span>
+                        <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">2</span><span class="o">];</span>
+                        <span class="n">i</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+                        <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">!=</span> <span class="mi">2</span><span class="o">)</span>
+                            <span class="k">throw</span> <span class="k">new</span> <span class="nf">SocketException</span><span class="o">(</span><span class="s">"Reply from SOCKS server badly formatted"</span><span class="o">);</span>
+                        <span class="k">break</span><span class="o">;</span>
+                    <span class="k">default</span><span class="o">:</span>
+                        <span class="n">ex</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SocketException</span><span class="o">(</span><span class="s">"Reply from SOCKS server contains wrong code"</span><span class="o">);</span>
+                        <span class="k">break</span><span class="o">;</span>
+                <span class="o">}</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="k">case</span> <span class="nl">GENERAL_FAILURE:</span>
+                <span class="n">ex</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SocketException</span><span class="o">(</span><span class="s">"SOCKS server general failure"</span><span class="o">);</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="k">case</span> <span class="nl">NOT_ALLOWED:</span>
+                <span class="n">ex</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SocketException</span><span class="o">(</span><span class="s">"SOCKS: Connection not allowed by ruleset"</span><span class="o">);</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="k">case</span> <span class="nl">NET_UNREACHABLE:</span>
+                <span class="n">ex</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SocketException</span><span class="o">(</span><span class="s">"SOCKS: Network unreachable"</span><span class="o">);</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="k">case</span> <span class="nl">HOST_UNREACHABLE:</span>
+                <span class="n">ex</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SocketException</span><span class="o">(</span><span class="s">"SOCKS: Host unreachable"</span><span class="o">);</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="k">case</span> <span class="nl">CONN_REFUSED:</span>
+                <span class="n">ex</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SocketException</span><span class="o">(</span><span class="s">"SOCKS: Connection refused"</span><span class="o">);</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="k">case</span> <span class="nl">TTL_EXPIRED:</span>
+                <span class="n">ex</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SocketException</span><span class="o">(</span><span class="s">"SOCKS: TTL expired"</span><span class="o">);</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="k">case</span> <span class="nl">CMD_NOT_SUPPORTED:</span>
+                <span class="n">ex</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SocketException</span><span class="o">(</span><span class="s">"SOCKS: Command not supported"</span><span class="o">);</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="k">case</span> <span class="nl">ADDR_TYPE_NOT_SUP:</span>
+                <span class="n">ex</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SocketException</span><span class="o">(</span><span class="s">"SOCKS: address type not supported"</span><span class="o">);</span>
+                <span class="k">break</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">ex</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">in</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+            <span class="n">out</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+            <span class="n">socket</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+            <span class="k">throw</span> <span class="n">ex</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="n">socket</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">authenticate</span><span class="o">(</span><span class="kt">byte</span> <span class="n">method</span><span class="o">,</span> <span class="n">InputStream</span> <span class="n">in</span><span class="o">,</span>
+                                 <span class="n">BufferedOutputStream</span> <span class="n">out</span><span class="o">,</span>
+                                 <span class="n">Socks5Setting</span> <span class="n">socks5Setting</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+        <span class="c1">// No Authentication required. We're done then!</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">method</span> <span class="o">==</span> <span class="n">NO_AUTH</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="cm">/**
+         * User/Password authentication. Try, in that order :
+         * - The application provided Authenticator, if any
+         * - the user.name &amp; no password (backward compatibility behavior).
+         */</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">method</span> <span class="o">==</span> <span class="n">USER_PASSW</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">String</span> <span class="n">userName</span> <span class="o">=</span> <span class="n">socks5Setting</span><span class="o">.</span><span class="na">getUsername</span><span class="o">();</span>
+            <span class="n">String</span> <span class="n">password</span> <span class="o">=</span> <span class="n">socks5Setting</span><span class="o">.</span><span class="na">getPassword</span><span class="o">();</span>
+            <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+            <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">userName</span><span class="o">.</span><span class="na">length</span><span class="o">());</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">userName</span><span class="o">.</span><span class="na">getBytes</span><span class="o">(</span><span class="s">"ISO-8859-1"</span><span class="o">));</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">UnsupportedEncodingException</span> <span class="n">uee</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">assert</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">password</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">password</span><span class="o">.</span><span class="na">length</span><span class="o">());</span>
+                <span class="k">try</span> <span class="o">{</span>
+                    <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">password</span><span class="o">.</span><span class="na">getBytes</span><span class="o">(</span><span class="s">"ISO-8859-1"</span><span class="o">));</span>
+                <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">java</span><span class="o">.</span><span class="na">io</span><span class="o">.</span><span class="na">UnsupportedEncodingException</span> <span class="n">uee</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">assert</span> <span class="kc">false</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span> <span class="k">else</span>
+                <span class="n">out</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+            <span class="n">out</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
+            <span class="kt">byte</span><span class="o">[]</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">2</span><span class="o">];</span>
+            <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">in</span><span class="o">.</span><span class="na">read</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">i</span> <span class="o">!=</span> <span class="mi">2</span> <span class="o">||</span> <span class="n">data</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+                <span class="cm">/* RFC 1929 specifies that the connection MUST be closed if
+                   authentication fails */</span>
+                <span class="n">out</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+                <span class="n">in</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+                <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span>
+            <span class="cm">/* Authentication succeeded */</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+  </div>
+
+  
+</article>
+
+
+      <footer class="site-footer">
+        <!-- SVG icons from https://iconmonstr.com -->
+
+        <!-- Github icon -->
+        <span class="my-span-icon">
+          <a href="https://github.com/jylaxp" aria-label="jylaxp's GitHub" title="jylaxp's GitHub">
+            <svg class="my-svg-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          </a>
+        </span>
+
+        <!-- Twitter icon
+        <span class="my-span-icon">
+          <a href="https://twitter.com/" aria-label="jylaxp's Twitter" title="jylaxp's Twitter">
+            <svg class="my-svg-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6.066 9.645c.183 4.04-2.83 8.544-8.164 8.544-1.622 0-3.131-.476-4.402-1.291 1.524.18 3.045-.244 4.252-1.189-1.256-.023-2.317-.854-2.684-1.995.451.086.895.061 1.298-.049-1.381-.278-2.335-1.522-2.304-2.853.388.215.83.344 1.301.359-1.279-.855-1.641-2.544-.889-3.835 1.416 1.738 3.533 2.881 5.92 3.001-.419-1.796.944-3.527 2.799-3.527.825 0 1.572.349 2.096.907.654-.128 1.27-.368 1.824-.697-.215.671-.67 1.233-1.263 1.589.581-.07 1.135-.224 1.649-.453-.384.578-.87 1.084-1.433 1.489z"/></svg>
+          </a>
+        </span>
+ -->
+        <!-- RSS icon -->
+        
+        <!-- Contact icon -->
+        
+        
+          <span class="my-span-icon">
+            <a href="/about.html" aria-label="Contact" title="Contact jylaxp">
+              <svg class="my-svg-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 .02c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6.99 6.98l-6.99 5.666-6.991-5.666h13.981zm.01 10h-14v-8.505l7 5.673 7-5.672v8.504z"/></svg>
+            </a>
+          </span>
+        
+
+      </footer>
+    </section>
+
+    
+  </body>
+</html>
