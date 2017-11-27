@@ -2,7 +2,6 @@
 layout: post
 title: Spring 之 BeanDefinition
 ---
-# Spring 之 BeanDefinition
 
 ### 1. 使用场景
 bean定义，用于表示bean的各种属性和bean与bean的关系，是 spring freamwork 描述bean定义的对象。
