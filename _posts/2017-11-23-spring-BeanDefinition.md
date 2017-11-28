@@ -1,6 +1,7 @@
 ---
 layout: post
 title: Spring 之 BeanDefinition
+category: Spring
 ---
 
 ### 1. 使用场景
@@ -117,3 +118,6 @@ BeanDefinition有以下子类：
 - RootBeanDefinition	所有的Bean定义，在实例化之前都会merge为RootBeanDefinition，在进行处理，提供一个统一的bean定义处理视图
 - ChildBeanDefinition	在spring freamwork 4.0的版本中暂时没有看到其怎么用的
 - GenericBeanDefinition	我们定义在xml文件和用注解配置的bean在BeanDefinition解析阶段都会解析成GenericBeanDefinition或其子类
+
+### 4. 其它
+- aliases　BeanDefinition的属性里并没有别名，别名和beanName的对应关系是在BeanDefinitionHolder类体现的。

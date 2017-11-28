@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <!-- Non social metatags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="theme-color" content="#157878">
+
+    
+
+    <title>zookeeper 配置和编程示例</title>
+
+    
+      <!-- Update your html tag to include the itemscope and itemtype attributes. -->
+<html itemscope itemtype="http://schema.org/Article">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Place this data between the <head> tags of your website -->
+
+  <meta name="author" content="jylaxp">
+
+<meta name="description" content="1. zookeeper配置 1.1 配置文件 zk的配置文件样例是conf/zoo_sample.cfg， 在zk启动的时候默认读取的配置文件是zoo.cfg。 copy一份zoo_sample.cfg为zoo.cfg cp zoo_sample.cfg zoo.cfg 默认的配置文件内容 # ..." />
+
+
+
+
+
+<!-- Schema.org markup for Google+ -->
+<meta itemprop="name" content="zookeeper 配置和编程示例">
+<meta itemprop="description" content="1. zookeeper配置 1.1 配置文件 zk的配置文件样例是conf/zoo_sample.cfg， 在zk启动的时候默认读取的配置文件是zoo.cfg。 copy一份zoo_sample.cfg为zoo.cfg cp zoo_sample.cfg zoo.cfg 默认的配置文件内容 # ...">
+
+  <meta itemprop="image" content="http://localhost:4000">
+
+
+<!-- Twitter Card data -->
+<meta name="twitter:card" content="summary_large_image">
+
+
+
+<meta name="twitter:title" content="zookeeper 配置和编程示例">
+<meta name="twitter:description" content="1. zookeeper配置 1.1 配置文件 zk的配置文件样例是conf/zoo_sample.cfg， 在zk启动的时候默认读取的配置文件是zoo.cfg。 copy一份zoo_sample.cfg为zoo.cfg cp zoo_sample.cfg zoo.cfg 默认的配置文件内容 # ...">
+
+
+
+<!-- Twitter summary card with large image must be at least 280x150px -->
+
+  <meta name="twitter:image:src" content="http://localhost:4000">
+  <meta property="twitter:image" content="http://localhost:4000">
+
+<meta property="twitter:url" content="http://localhost:4000/2017/04/18/zookeeper-setup-and-program-demo.html">
+
+<!-- Open Graph data -->
+<meta property="og:title" content="zookeeper 配置和编程示例" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:4000/2017/04/18/zookeeper-setup-and-program-demo.html" />
+
+  <meta property="og:image" content="http://localhost:4000" />
+
+<meta property="og:description" content="1. zookeeper配置 1.1 配置文件 zk的配置文件样例是conf/zoo_sample.cfg， 在zk启动的时候默认读取的配置文件是zoo.cfg。 copy一份zoo_sample.cfg为zoo.cfg cp zoo_sample.cfg zoo.cfg 默认的配置文件内容 # ..." />
+<meta property="og:site_name" content="jylaxp's Blog" />
+
+  <meta property="article:published_time" content="2017-04-18T00:00:00+08:00" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+    
+
+    <link rel="canonical" href="http://localhost:4000/2017/04/18/zookeeper-setup-and-program-demo.html">
+
+    
+
+    <link rel="shortcut icon" href="http://localhost:4000/favicon.ico">
+    <meta name="robots" content="noarchive">
+
+    <!-- <link rel="alternate" media="only screen and (max-width: 640px)" href="">
+    <link rel="alternate" media="handheld" href=""> -->
+
+
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+  </head>
+  <body>
+
+    <header class="site-header" role="banner">
+
+  <div class="wrapper">
+    
+    
+
+    
+      <a class="site-title" href="/">jylaxp&#39;s Blog</a>
+    
+
+    
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+              <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+              <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger">
+          
+            
+            
+              
+              
+            
+          
+            
+            
+              
+                <a class="page-link" href="/about.html">About</a>
+              
+            
+          
+            
+            
+              
+                <a class="page-link" href="/contact.html">Contact</a>
+              
+            
+          
+            
+            
+          
+            
+            
+          
+        </div>
+      </nav>
+    
+  </div>
+</header>
+
+
+    
+    
+    
+
+    <section class="page-header">
+      <h1 class="project-name">zookeeper 配置和编程示例</h1>
+      <h2 class="project-tagline"></h2>
+      
+      <!-- Post tagline -->
+      
+        <h2 class="project-date">
+        <time datetime="2017-04-18T00:00:00+08:00" itemprop="datePublished">
+          
+          Apr 18, 2017
+        </time>
+        
+        
+          • <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">jylaxp</span></span>
+        
+        </h2>
+      
+      <!-- End: Post tagline -->
+    </section>
+
+    <section class="main-content">
+
+      <article itemscope itemtype="http://schema.org/BlogPosting">
+
+  <!-- <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">zookeeper 配置和编程示例</h1>
+    <p class="post-meta">
+      <time datetime="2017-04-18T00:00:00+08:00" itemprop="datePublished">
+        
+        Apr 18, 2017
+      </time>
+      </p>
+  </header> -->
+
+  <div itemprop="articleBody">
+    <h2 id="1-zookeeper配置">1. zookeeper配置</h2>
+<h3 id="11-配置文件">1.1 配置文件</h3>
+<p>zk的配置文件样例是conf/zoo_sample.cfg， 在zk启动的时候默认读取的配置文件是zoo.cfg。 <br />
+copy一份zoo_sample.cfg为zoo.cfg</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cp zoo_sample.cfg zoo.cfg
+</code></pre></div></div>
+<p>默认的配置文件内容</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># The number of milliseconds of each tick</span>
+<span class="nv">tickTime</span><span class="o">=</span>2000
+<span class="c"># The number of ticks that the initial </span>
+<span class="c"># synchronization phase can take</span>
+<span class="nv">initLimit</span><span class="o">=</span>10
+<span class="c"># The number of ticks that can pass between </span>
+<span class="c"># sending a request and getting an acknowledgement</span>
+<span class="nv">syncLimit</span><span class="o">=</span>5
+<span class="c"># the directory where the snapshot is stored.</span>
+<span class="c"># do not use /tmp for storage, /tmp here is just </span>
+<span class="c"># example sakes.</span>
+<span class="nv">dataDir</span><span class="o">=</span>/tmp/zookeeper
+<span class="c"># the port at which the clients will connect</span>
+<span class="nv">clientPort</span><span class="o">=</span>2181
+<span class="c"># the maximum number of client connections.</span>
+<span class="c"># increase this if you need to handle more clients</span>
+<span class="c">#maxClientCnxns=60</span>
+<span class="c">#</span>
+<span class="c"># Be sure to read the maintenance section of the </span>
+<span class="c"># administrator guide before turning on autopurge.</span>
+<span class="c">#</span>
+<span class="c"># http://zookeeper.apache.org/doc/current/zookeeperAdmin.html#sc_maintenance</span>
+<span class="c">#</span>
+<span class="c"># The number of snapshots to retain in dataDir</span>
+<span class="c">#autopurge.snapRetainCount=3</span>
+<span class="c"># Purge task interval in hours</span>
+<span class="c"># Set to "0" to disable auto purge feature</span>
+<span class="c">#autopurge.purgeInterval=1</span>
+</code></pre></div></div>
+<p>在zk的数据目录创建myid文件，这里是 /tmp/zookeeper</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo </span>1 <span class="o">&gt;&gt;</span> /tmp/zookeeper/myid
+</code></pre></div></div>
+<p>myid文件是zk节点在集群中的编码，范围是:1~255</p>
+<h3 id="12-配置集群">1.2 配置集群</h3>
+<p>zk的集群节点信息是配置在zoo.cfg中的，节点信息格式是</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>server.x<span class="o">=</span>ip:port:port
+</code></pre></div></div>
+<ul>
+  <li>server : 固定写法</li>
+  <li>x：这个x表示节点id，就是上节中配置在myid文件中的数字</li>
+  <li>ip: 节点的ip地址</li>
+  <li>port: 第一port，集群用来同步数据，处理事务通信；第二个port用于集群选举 <br />
+如果有三个节点，它们的节点信息分别为</li>
+  <li>node1:  192.168.10.11:2888:3000, id为1</li>
+  <li>node2:  192.168.10.12:2888:3000, id为2</li>
+  <li>node3:  192.168.10.13:2888:3000, id为3
+让它们三个组成一个集群，则需要在这三个节点的配置文件中加入如下配置项
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>server.1<span class="o">=</span>192.168.10.11:2888:3000
+server.2<span class="o">=</span>192.168.10.12:2888:3000
+server.3<span class="o">=</span>192.168.10.13:2888:3000
+</code></pre></div>    </div>
+    <p>启动三个节点，自动组成集群。</p>
+    <h3 id="13-单机模式">1.3 单机模式</h3>
+    <p>单机模式就很简单了，只有一个节点的集群就是单机模式。</p>
+  </li>
+</ul>
+
+<h1 id="2-zookeeper-api-使用">2. zookeeper API 使用</h1>
+<h2 id="21-同步方法调用示例">2.1 同步方法调用示例</h2>
+<p>测试接口</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">mydomain</span><span class="o">;</span>
+
+<span class="cm">/**
+ * @author jyl25609
+ * @version Id: Test, v 0.1 2017/4/18 10:03 jyl25609 Exp $
+ */</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Test</span> <span class="o">{</span>
+    <span class="cm">/**
+     * 测试方法
+     */</span>
+    <span class="kt">void</span> <span class="nf">test</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>zookeeper API 测试抽象类</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">mydomain</span><span class="o">.</span><span class="na">zookeeper</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.concurrent.CountDownLatch</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.apache.log4j.Logger</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.zookeeper.WatchedEvent</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.zookeeper.Watcher</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.zookeeper.ZooKeeper</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.zookeeper.data.Stat</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.mydomain.Test</span><span class="o">;</span>
+
+<span class="cm">/**
+ * @author jyl25609
+ * @version Id: ZooTest, v 0.1 2017/4/17 15:30 jyl25609 Exp $
+ */</span>
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">ZooTest</span> <span class="kd">implements</span> <span class="n">Watcher</span><span class="o">,</span> <span class="n">Test</span> <span class="o">{</span>
+
+    <span class="cm">/** 日志 */</span>
+    <span class="kd">protected</span> <span class="n">Logger</span>              <span class="n">logger</span>         <span class="o">=</span> <span class="n">Logger</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">ZooTest</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+
+    <span class="cm">/** countDownLatch */</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">CountDownLatch</span> <span class="n">countDownLatch</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CountDownLatch</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+
+    <span class="cm">/** countDown */</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">CountDownLatch</span> <span class="n">countDown</span>      <span class="o">=</span> <span class="k">new</span> <span class="n">CountDownLatch</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+
+    <span class="cm">/** 服务器 */</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">String</span>   <span class="n">server</span>         <span class="o">=</span> <span class="s">"192.168.95.128:2181"</span><span class="o">;</span>
+
+    <span class="cm">/** 超时时间 */</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="kd">static</span> <span class="kt">int</span>      <span class="n">timeout</span>        <span class="o">=</span> <span class="mi">5000</span><span class="o">;</span>
+
+    <span class="cm">/** ZooKeeper */</span>
+    <span class="kd">protected</span> <span class="n">ZooKeeper</span>           <span class="n">zooKeeper</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * 初始化
+     */</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"zk connecting ......"</span><span class="o">);</span>
+        <span class="n">zooKeeper</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ZooKeeper</span><span class="o">(</span><span class="n">server</span><span class="o">,</span> <span class="n">timeout</span><span class="o">,</span> <span class="k">this</span><span class="o">);</span>
+        <span class="n">countDownLatch</span><span class="o">.</span><span class="na">await</span><span class="o">();</span>
+        <span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"zk connected"</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"SessionId:0x%x"</span><span class="o">,</span> <span class="n">zooKeeper</span><span class="o">.</span><span class="na">getSessionId</span><span class="o">()));</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 测试方法
+     */</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">init</span><span class="o">();</span>
+            <span class="n">start</span><span class="o">();</span>
+            <span class="n">waitForExit</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="n">close</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 开始
+     * @throws Exception 异常
+     */</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * watcher
+     * @param watchedEvent 事件
+     */</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">process</span><span class="o">(</span><span class="n">WatchedEvent</span> <span class="n">watchedEvent</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">watchedEvent</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">watchedEvent</span><span class="o">.</span><span class="na">getState</span><span class="o">()</span> <span class="o">==</span> <span class="n">Event</span><span class="o">.</span><span class="na">KeeperState</span><span class="o">.</span><span class="na">SyncConnected</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">watchedEvent</span><span class="o">.</span><span class="na">getType</span><span class="o">()</span> <span class="o">==</span> <span class="n">Event</span><span class="o">.</span><span class="na">EventType</span><span class="o">.</span><span class="na">NodeChildrenChanged</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">zooKeeper</span><span class="o">.</span><span class="na">getChildren</span><span class="o">(</span><span class="n">watchedEvent</span><span class="o">.</span><span class="na">getPath</span><span class="o">(),</span> <span class="k">this</span><span class="o">);</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">watchedEvent</span><span class="o">.</span><span class="na">getType</span><span class="o">()</span> <span class="o">==</span> <span class="n">Event</span><span class="o">.</span><span class="na">EventType</span><span class="o">.</span><span class="na">NodeCreated</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">zooKeeper</span><span class="o">.</span><span class="na">exists</span><span class="o">(</span><span class="n">watchedEvent</span><span class="o">.</span><span class="na">getPath</span><span class="o">(),</span> <span class="kc">true</span><span class="o">);</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">watchedEvent</span><span class="o">.</span><span class="na">getType</span><span class="o">()</span> <span class="o">==</span> <span class="n">Event</span><span class="o">.</span><span class="na">EventType</span><span class="o">.</span><span class="na">NodeDataChanged</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">Stat</span> <span class="n">stat</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Stat</span><span class="o">();</span>
+                    <span class="n">zooKeeper</span><span class="o">.</span><span class="na">getData</span><span class="o">(</span><span class="n">watchedEvent</span><span class="o">.</span><span class="na">getPath</span><span class="o">(),</span> <span class="k">this</span><span class="o">,</span> <span class="n">stat</span><span class="o">);</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">watchedEvent</span><span class="o">.</span><span class="na">getType</span><span class="o">()</span> <span class="o">==</span> <span class="n">Event</span><span class="o">.</span><span class="na">EventType</span><span class="o">.</span><span class="na">NodeDeleted</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">zooKeeper</span><span class="o">.</span><span class="na">exists</span><span class="o">(</span><span class="n">watchedEvent</span><span class="o">.</span><span class="na">getPath</span><span class="o">(),</span> <span class="kc">true</span><span class="o">);</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="n">countDownLatch</span><span class="o">.</span><span class="na">countDown</span><span class="o">();</span>
+                <span class="o">}</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+            <span class="o">}</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">watchedEvent</span><span class="o">.</span><span class="na">getState</span><span class="o">()</span> <span class="o">==</span> <span class="n">Event</span><span class="o">.</span><span class="na">KeeperState</span><span class="o">.</span><span class="na">Disconnected</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">countDown</span><span class="o">.</span><span class="na">countDown</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 等待退出
+     */</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">waitForExit</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">countDown</span><span class="o">.</span><span class="na">await</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 关闭
+     */</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">close</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">zooKeeper</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="n">zooKeeper</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>zookeeper API 同步测试</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">mydomain</span><span class="o">.</span><span class="na">zookeeper</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.apache.commons.lang3.StringUtils</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.zookeeper.CreateMode</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.zookeeper.ZooDefs</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.zookeeper.data.Stat</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.mydomain.ZooTest</span><span class="o">;</span>
+
+<span class="cm">/**
+ * @author jyl25609
+ * @version Id: ZooAPI, v 0.1 2017/4/17 15:28 jyl25609 Exp $
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ZooAPI</span> <span class="kd">extends</span> <span class="n">ZooTest</span> <span class="o">{</span>
+
+    <span class="cm">/**
+     * 开始
+     * @throws Exception 异常
+     */</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="n">init</span><span class="o">();</span>
+        <span class="n">String</span> <span class="n">p</span> <span class="o">=</span> <span class="s">"/zoo"</span><span class="o">;</span>
+        <span class="n">String</span> <span class="n">path</span> <span class="o">=</span> <span class="n">create</span><span class="o">(</span><span class="n">p</span><span class="o">,</span> <span class="s">"123"</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">path</span><span class="o">);</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s">"/c1"</span><span class="o">;</span>
+        <span class="n">create</span><span class="o">(</span><span class="n">p</span><span class="o">,</span> <span class="n">p</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s">"/c2"</span><span class="o">;</span>
+        <span class="n">create</span><span class="o">(</span><span class="n">p</span><span class="o">,</span> <span class="n">p</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">path</span> <span class="o">+</span> <span class="s">"/c3"</span><span class="o">;</span>
+        <span class="n">create</span><span class="o">(</span><span class="n">p</span><span class="o">,</span> <span class="n">p</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+        <span class="n">String</span> <span class="n">value</span> <span class="o">=</span> <span class="n">getData</span><span class="o">(</span><span class="n">path</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">value</span><span class="o">);</span>
+        <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">children</span> <span class="o">=</span> <span class="n">getChildren</span><span class="o">(</span><span class="n">path</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">join</span><span class="o">(</span><span class="n">children</span><span class="o">,</span> <span class="s">","</span><span class="o">));</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">s</span> <span class="o">:</span> <span class="n">children</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">getData</span><span class="o">(</span><span class="n">path</span> <span class="o">+</span> <span class="s">"/"</span> <span class="o">+</span> <span class="n">s</span><span class="o">);</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">value</span><span class="o">);</span>
+            <span class="n">Stat</span> <span class="n">stat</span> <span class="o">=</span> <span class="n">setData</span><span class="o">(</span><span class="n">path</span> <span class="o">+</span> <span class="s">"/"</span> <span class="o">+</span> <span class="n">s</span><span class="o">,</span> <span class="n">value</span> <span class="o">+</span> <span class="s">"_haha"</span><span class="o">);</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">stat</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * create
+     * @param path path
+     * @param value value
+     * @param ephemeral 是佛是临时节点
+     * @return 路径
+     * @throws Exception 异常
+     */</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="nf">create</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">,</span> <span class="n">String</span> <span class="n">value</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">ephemeral</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="n">delete</span><span class="o">(</span><span class="n">path</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">zooKeeper</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="n">value</span><span class="o">.</span><span class="na">getBytes</span><span class="o">(),</span> <span class="n">ZooDefs</span><span class="o">.</span><span class="na">Ids</span><span class="o">.</span><span class="na">OPEN_ACL_UNSAFE</span><span class="o">,</span> <span class="n">ephemeral</span> <span class="o">?</span> <span class="n">CreateMode</span><span class="o">.</span><span class="na">EPHEMERAL</span> <span class="o">:</span> <span class="n">CreateMode</span><span class="o">.</span><span class="na">PERSISTENT</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 删除
+     * @param path path
+     * @throws Exception 异常
+     */</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">delete</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">zooKeeper</span><span class="o">.</span><span class="na">exists</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="k">this</span><span class="o">)</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">zooKeeper</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 获取数据
+     * @param path path
+     * @return 数据
+     * @throws Exception 异常
+     */</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="nf">getData</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="n">Stat</span> <span class="n">stat</span> <span class="o">=</span> <span class="n">zooKeeper</span><span class="o">.</span><span class="na">exists</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="k">this</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">stat</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="kt">byte</span><span class="o">[]</span> <span class="n">data</span> <span class="o">=</span> <span class="n">zooKeeper</span><span class="o">.</span><span class="na">getData</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="n">stat</span><span class="o">);</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nf">String</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="s">""</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 更新数据
+     * @param path path
+     * @param data data
+     * @return 状态
+     * @throws Exception 异常
+     */</span>
+    <span class="kd">private</span> <span class="n">Stat</span> <span class="nf">setData</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">,</span> <span class="n">String</span> <span class="n">data</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">zooKeeper</span><span class="o">.</span><span class="na">setData</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="n">data</span><span class="o">.</span><span class="na">getBytes</span><span class="o">(),</span> <span class="mi">0</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 获取子节点
+     * @param path path
+     * @return 子节点
+     * @throws Exception 异常
+     */</span>
+    <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">getChildren</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">zooKeeper</span><span class="o">.</span><span class="na">getChildren</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="k">this</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>main</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">mydomain</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.mydomain.zookeeper.ZooCallbackAPI</span><span class="o">;</span>
+
+<span class="cm">/**
+ * Hello world!
+ *
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">App</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">test</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 测试
+     */</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">Test</span> <span class="n">zoo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ZooAPI</span><span class="o">();</span>
+        <span class="n">zoo</span><span class="o">.</span><span class="na">test</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+</code></pre></div></div>
+<h2 id="22-异步方法示例">2.2 异步方法示例</h2>
+<p>zookeeper 异步测试</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">mydomain</span><span class="o">.</span><span class="na">zookeeper</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.concurrent.TimeUnit</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.apache.zookeeper.AsyncCallback</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.zookeeper.CreateMode</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.zookeeper.ZooDefs</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.zookeeper.data.Stat</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.mydomain.ZooTest</span><span class="o">;</span>
+
+<span class="cm">/**
+ * @author jyl25609
+ * @version Id: ZooCallbackAPI, v 0.1 2017/4/17 21:00 jyl25609 Exp $
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ZooCallbackAPI</span> <span class="kd">extends</span> <span class="n">ZooTest</span> <span class="o">{</span>
+    <span class="cm">/**
+     * 开始
+     * @throws Exception 异常
+     */</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="n">init</span><span class="o">();</span>
+        <span class="n">String</span> <span class="n">path</span> <span class="o">=</span> <span class="s">"/zoo/c1"</span><span class="o">;</span>
+        <span class="n">String</span> <span class="n">value</span> <span class="o">=</span> <span class="s">"abcdef"</span><span class="o">;</span>
+        <span class="n">create</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
+        <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+        <span class="n">exists</span><span class="o">(</span><span class="n">path</span><span class="o">);</span>
+        <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+        <span class="n">getData</span><span class="o">(</span><span class="n">path</span><span class="o">);</span>
+        <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+        <span class="n">setData</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="s">"hello!"</span><span class="o">);</span>
+        <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+        <span class="n">getData</span><span class="o">(</span><span class="n">path</span><span class="o">);</span>
+        <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">5</span><span class="o">);</span>
+        <span class="n">delete</span><span class="o">(</span><span class="n">path</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * create
+     *
+     * @param path path
+     * @param value value
+     */</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">create</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">,</span> <span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">CallbackImpl</span> <span class="n">cb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CallbackImpl</span><span class="o">();</span>
+        <span class="n">zooKeeper</span><span class="o">.</span><span class="na">create</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="n">value</span><span class="o">.</span><span class="na">getBytes</span><span class="o">(),</span> <span class="n">ZooDefs</span><span class="o">.</span><span class="na">Ids</span><span class="o">.</span><span class="na">OPEN_ACL_UNSAFE</span><span class="o">,</span> <span class="n">CreateMode</span><span class="o">.</span><span class="na">EPHEMERAL</span><span class="o">,</span> <span class="n">cb</span><span class="o">,</span> <span class="s">"create"</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * delete
+     *
+     * @param path path
+     */</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">delete</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">VoidCallbackImpl</span> <span class="n">cb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">VoidCallbackImpl</span><span class="o">();</span>
+        <span class="n">zooKeeper</span><span class="o">.</span><span class="na">delete</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="n">cb</span><span class="o">,</span> <span class="s">"delete"</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * getData
+     *
+     * @param path path
+     */</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">getData</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">DataCallbackImpl</span> <span class="n">cb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataCallbackImpl</span><span class="o">();</span>
+        <span class="n">zooKeeper</span><span class="o">.</span><span class="na">getData</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="n">cb</span><span class="o">,</span> <span class="s">"getData"</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * setData
+     *
+     * @param path path
+     * @param value value
+     */</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">setData</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">,</span> <span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">StatCallbackImpl</span> <span class="n">cb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StatCallbackImpl</span><span class="o">();</span>
+        <span class="n">zooKeeper</span><span class="o">.</span><span class="na">setData</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="n">value</span><span class="o">.</span><span class="na">getBytes</span><span class="o">(),</span> <span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="n">cb</span><span class="o">,</span> <span class="s">"setData"</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * exists
+     *
+     * @param path path
+     */</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">exists</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">StatCallbackImpl</span> <span class="n">cb</span> <span class="o">=</span> <span class="k">new</span> <span class="n">StatCallbackImpl</span><span class="o">();</span>
+        <span class="n">zooKeeper</span><span class="o">.</span><span class="na">exists</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="k">this</span><span class="o">,</span> <span class="n">cb</span><span class="o">,</span> <span class="s">"exists"</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * CallbackImpl
+     */</span>
+    <span class="kd">class</span> <span class="nc">CallbackImpl</span> <span class="kd">implements</span> <span class="n">AsyncCallback</span><span class="o">.</span><span class="na">StringCallback</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">processResult</span><span class="o">(</span><span class="kt">int</span> <span class="n">rc</span><span class="o">,</span> <span class="n">String</span> <span class="n">path</span><span class="o">,</span> <span class="n">Object</span> <span class="n">ctx</span><span class="o">,</span> <span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"cxt:[%s], rc:[%s], path:[%s], name:[%s]"</span><span class="o">,</span> <span class="n">ctx</span><span class="o">,</span> <span class="n">rc</span><span class="o">,</span> <span class="n">path</span><span class="o">,</span> <span class="n">name</span><span class="o">));</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * VoidCallbackImpl
+     */</span>
+    <span class="kd">class</span> <span class="nc">VoidCallbackImpl</span> <span class="kd">implements</span> <span class="n">AsyncCallback</span><span class="o">.</span><span class="na">VoidCallback</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">processResult</span><span class="o">(</span><span class="kt">int</span> <span class="n">rc</span><span class="o">,</span> <span class="n">String</span> <span class="n">path</span><span class="o">,</span> <span class="n">Object</span> <span class="n">ctx</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"cxt:[%s], rc:[%s], path:[%s]"</span><span class="o">,</span> <span class="n">ctx</span><span class="o">,</span> <span class="n">rc</span><span class="o">,</span> <span class="n">path</span><span class="o">));</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * DataCallbackImpl
+     */</span>
+    <span class="kd">class</span> <span class="nc">DataCallbackImpl</span> <span class="kd">implements</span> <span class="n">AsyncCallback</span><span class="o">.</span><span class="na">DataCallback</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">processResult</span><span class="o">(</span><span class="kt">int</span> <span class="n">rc</span><span class="o">,</span> <span class="n">String</span> <span class="n">path</span><span class="o">,</span> <span class="n">Object</span> <span class="n">ctx</span><span class="o">,</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">data</span><span class="o">,</span> <span class="n">Stat</span> <span class="n">stat</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"cxt:[%s], rc:[%s], path:[%s], data:[%s], stat:[%s]"</span><span class="o">,</span> <span class="n">ctx</span><span class="o">,</span> <span class="n">rc</span><span class="o">,</span> <span class="n">path</span><span class="o">,</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">data</span><span class="o">),</span> <span class="n">stat</span><span class="o">));</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * StatCallbackImpl
+     */</span>
+    <span class="kd">class</span> <span class="nc">StatCallbackImpl</span> <span class="kd">implements</span> <span class="n">AsyncCallback</span><span class="o">.</span><span class="na">StatCallback</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">processResult</span><span class="o">(</span><span class="kt">int</span> <span class="n">rc</span><span class="o">,</span> <span class="n">String</span> <span class="n">path</span><span class="o">,</span> <span class="n">Object</span> <span class="n">ctx</span><span class="o">,</span> <span class="n">Stat</span> <span class="n">stat</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"cxt:[%s], rc:[%s], path:[%s], stat:[%s]"</span><span class="o">,</span> <span class="n">ctx</span><span class="o">,</span> <span class="n">rc</span><span class="o">,</span> <span class="n">path</span><span class="o">,</span> <span class="n">stat</span><span class="o">));</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>main</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">mydomain</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.mydomain.zookeeper.ZooCallbackAPI</span><span class="o">;</span>
+
+<span class="cm">/**
+ * Hello world!
+ *
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">App</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">test</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 测试
+     */</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">Test</span> <span class="n">zoo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ZooCallbackAPI</span><span class="o">();</span>
+        <span class="n">zoo</span><span class="o">.</span><span class="na">test</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="3-zkclient">3. zkClient</h2>
+<p>测试类</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">mydomain</span><span class="o">.</span><span class="na">zkclient</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.Date</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.concurrent.CountDownLatch</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.concurrent.TimeUnit</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.I0Itec.zkclient.IZkChildListener</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.I0Itec.zkclient.IZkDataListener</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.I0Itec.zkclient.IZkStateListener</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.I0Itec.zkclient.ZkClient</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.I0Itec.zkclient.exception.ZkMarshallingError</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.I0Itec.zkclient.serialize.ZkSerializer</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.commons.lang3.StringUtils</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.zookeeper.Watcher</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.mydomain.Test</span><span class="o">;</span>
+
+<span class="cm">/**
+ * @author jyl25609
+ * @version Id: ZooClientTest, v 0.1 2017/4/18 10:34 jyl25609 Exp $
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ZooClientTest</span> <span class="kd">implements</span> <span class="n">Test</span> <span class="o">{</span>
+
+    <span class="cm">/** countDown */</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">CountDownLatch</span> <span class="n">countDown</span>     <span class="o">=</span> <span class="k">new</span> <span class="n">CountDownLatch</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+
+    <span class="cm">/** 服务器 */</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">String</span>   <span class="n">server</span>        <span class="o">=</span> <span class="s">"192.168.95.128:2181"</span><span class="o">;</span>
+
+    <span class="cm">/** ZkClient */</span>
+    <span class="kd">private</span> <span class="n">ZkClient</span>              <span class="n">zkClient</span><span class="o">;</span>
+
+    <span class="cm">/** IZkDataListener */</span>
+    <span class="kd">private</span> <span class="n">IZkDataListener</span>       <span class="n">dataListener</span>  <span class="o">=</span> <span class="k">new</span> <span class="n">IZkDataListenerImpl</span><span class="o">();</span>
+
+    <span class="cm">/** IZkChildListener */</span>
+    <span class="kd">private</span> <span class="n">IZkChildListener</span>      <span class="n">childListener</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IZkChildListenerImpl</span><span class="o">();</span>
+
+    <span class="cm">/** IZkStateListener */</span>
+    <span class="kd">private</span> <span class="n">IZkStateListener</span>      <span class="n">stateListener</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IZkStateListenerImpl</span><span class="o">();</span>
+
+    <span class="cm">/** ZkSerializer */</span>
+    <span class="kd">private</span> <span class="n">ZkSerializer</span>          <span class="n">serializer</span>    <span class="o">=</span> <span class="k">new</span> <span class="n">ZkSerializerImpl</span><span class="o">();</span>
+
+    <span class="cm">/**
+     * 初始化
+     */</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">zkClient</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ZkClient</span><span class="o">(</span><span class="n">server</span><span class="o">);</span>
+        <span class="n">zkClient</span><span class="o">.</span><span class="na">setZkSerializer</span><span class="o">(</span><span class="n">serializer</span><span class="o">);</span>
+        <span class="n">subscribeStateChanges</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 测试方法
+     */</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">init</span><span class="o">();</span>
+            <span class="n">start</span><span class="o">();</span>
+            <span class="n">waitForExit</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="n">zkClient</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * start
+     */</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="n">String</span> <span class="n">rootPath</span> <span class="o">=</span> <span class="s">"/zoo"</span><span class="o">;</span>
+        <span class="n">subscribeDataChanges</span><span class="o">(</span><span class="n">rootPath</span><span class="o">);</span>
+        <span class="n">subscribeChildChanges</span><span class="o">(</span><span class="n">rootPath</span><span class="o">);</span>
+        <span class="n">String</span> <span class="n">path</span> <span class="o">=</span> <span class="n">rootPath</span> <span class="o">+</span> <span class="s">"/c1"</span><span class="o">;</span>
+        <span class="n">subscribeDataChanges</span><span class="o">(</span><span class="n">path</span><span class="o">);</span>
+        <span class="n">create</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="s">"123"</span><span class="o">);</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">rootPath</span> <span class="o">+</span> <span class="s">"/c2"</span><span class="o">;</span>
+        <span class="n">subscribeDataChanges</span><span class="o">(</span><span class="n">path</span><span class="o">);</span>
+        <span class="n">create</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="s">"456"</span><span class="o">);</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">rootPath</span> <span class="o">+</span> <span class="s">"/c3"</span><span class="o">;</span>
+        <span class="n">subscribeDataChanges</span><span class="o">(</span><span class="n">path</span><span class="o">);</span>
+        <span class="n">create</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="s">"789"</span><span class="o">);</span>
+        <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">children</span> <span class="o">=</span> <span class="n">getChildren</span><span class="o">(</span><span class="n">rootPath</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">join</span><span class="o">(</span><span class="n">children</span><span class="o">,</span> <span class="s">","</span><span class="o">));</span>
+        <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">c</span> <span class="o">:</span> <span class="n">children</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">String</span> <span class="n">v</span> <span class="o">=</span> <span class="n">getData</span><span class="o">(</span><span class="n">rootPath</span> <span class="o">+</span> <span class="s">"/"</span> <span class="o">+</span> <span class="n">c</span><span class="o">);</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">v</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">while</span> <span class="o">(</span><span class="n">count</span><span class="o">++</span> <span class="o">&lt;</span> <span class="mi">200</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">writeData</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="o">(</span><span class="k">new</span> <span class="n">Date</span><span class="o">()).</span><span class="na">toString</span><span class="o">());</span>
+            <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * create
+     * @param path path
+     * @param value value
+     */</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">create</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">,</span> <span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">zkClient</span><span class="o">.</span><span class="na">exists</span><span class="o">(</span><span class="n">path</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="n">zkClient</span><span class="o">.</span><span class="na">createEphemeral</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * getChildren
+     *
+     * @param path path
+     * @return Children
+     */</span>
+    <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="nf">getChildren</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">zkClient</span><span class="o">.</span><span class="na">getChildren</span><span class="o">(</span><span class="n">path</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * getData
+     *
+     * @param path path
+     * @return data
+     */</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="nf">getData</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">zkClient</span><span class="o">.</span><span class="na">readData</span><span class="o">(</span><span class="n">path</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * writeData
+     *
+     * @param path path
+     * @param value value
+     */</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">writeData</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">,</span> <span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">zkClient</span><span class="o">.</span><span class="na">writeData</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * subscribeDataChanges
+     *
+     * @param path path
+     */</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">subscribeDataChanges</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">zkClient</span><span class="o">.</span><span class="na">subscribeDataChanges</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="n">dataListener</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * subscribeChildChanges
+     *
+     * @param path path
+     */</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">subscribeChildChanges</span><span class="o">(</span><span class="n">String</span> <span class="n">path</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">zkClient</span><span class="o">.</span><span class="na">subscribeChildChanges</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="n">childListener</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * subscribeStateChanges
+     */</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">subscribeStateChanges</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">zkClient</span><span class="o">.</span><span class="na">subscribeStateChanges</span><span class="o">(</span><span class="n">stateListener</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 等待退出
+     */</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">waitForExit</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">countDown</span><span class="o">.</span><span class="na">await</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * IZkDataListenerImpl
+     */</span>
+    <span class="kd">class</span> <span class="nc">IZkDataListenerImpl</span> <span class="kd">implements</span> <span class="n">IZkDataListener</span> <span class="o">{</span>
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleDataChange</span><span class="o">(</span><span class="n">String</span> <span class="n">dataPath</span><span class="o">,</span> <span class="n">Object</span> <span class="n">data</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"[IZkDataListener][dataChange] dataPath=%s, data=%s"</span><span class="o">,</span> <span class="n">dataPath</span><span class="o">,</span> <span class="n">data</span><span class="o">));</span>
+        <span class="o">}</span>
+
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleDataDeleted</span><span class="o">(</span><span class="n">String</span> <span class="n">dataPath</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"[IZkDataListener][dataDeleted] dataPath=%s"</span><span class="o">,</span> <span class="n">dataPath</span><span class="o">));</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * IZkChildListenerImpl
+     */</span>
+    <span class="kd">class</span> <span class="nc">IZkChildListenerImpl</span> <span class="kd">implements</span> <span class="n">IZkChildListener</span> <span class="o">{</span>
+        <span class="cm">/**
+         * Called when the children of the given path changed.
+         *
+         * @param parentPath    The parent path
+         * @param currentChilds The children or null if the root node (parent path) was deleted.
+         * @throws Exception Exception
+         */</span>
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleChildChange</span><span class="o">(</span><span class="n">String</span> <span class="n">parentPath</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">currentChilds</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"[IZkChildListenerImpl][childChange] parentPath=%s, currentChilds=%s"</span><span class="o">,</span> <span class="n">parentPath</span><span class="o">,</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">join</span><span class="o">(</span><span class="n">currentChilds</span><span class="o">,</span> <span class="s">","</span><span class="o">)));</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * IZkStateListenerImpl
+     */</span>
+    <span class="kd">class</span> <span class="nc">IZkStateListenerImpl</span> <span class="kd">implements</span> <span class="n">IZkStateListener</span> <span class="o">{</span>
+        <span class="cm">/**
+         * Called when the zookeeper connection state has changed.
+         *
+         * @param state The new state.
+         * @throws Exception On any error.
+         */</span>
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleStateChanged</span><span class="o">(</span><span class="n">Watcher</span><span class="o">.</span><span class="na">Event</span><span class="o">.</span><span class="na">KeeperState</span> <span class="n">state</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"[IZkStateListenerImpl][StateChanged] state=%s"</span><span class="o">,</span> <span class="n">state</span><span class="o">));</span>
+        <span class="o">}</span>
+
+        <span class="cm">/**
+         * Called after the zookeeper session has expired and a new session has been created. You would have to re-create
+         * any ephemeral nodes here.
+         *
+         * @throws Exception On any error.
+         */</span>
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleNewSession</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"[IZkStateListenerImpl][NewSession]"</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * ZkSerializerImpl
+     */</span>
+    <span class="kd">class</span> <span class="nc">ZkSerializerImpl</span> <span class="kd">implements</span> <span class="n">ZkSerializer</span> <span class="o">{</span>
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">byte</span><span class="o">[]</span> <span class="nf">serialize</span><span class="o">(</span><span class="n">Object</span> <span class="n">data</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ZkMarshallingError</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">data</span> <span class="k">instanceof</span> <span class="n">String</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">cast</span><span class="o">(</span><span class="n">data</span><span class="o">).</span><span class="na">getBytes</span><span class="o">();</span>
+            <span class="o">}</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="kt">byte</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+        <span class="o">}</span>
+
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="n">Object</span> <span class="nf">deserialize</span><span class="o">(</span><span class="kt">byte</span><span class="o">[]</span> <span class="n">bytes</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ZkMarshallingError</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nf">String</span><span class="o">(</span><span class="n">bytes</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+</code></pre></div></div>
+<p>main</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">mydomain</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.mydomain.zkclient.ZooClientTest</span><span class="o">;</span>
+
+<span class="cm">/**
+ * Hello world!
+ *
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">App</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">test</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 测试
+     */</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">Test</span> <span class="n">zoo</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ZooClientTest</span><span class="o">();</span>
+        <span class="n">zoo</span><span class="o">.</span><span class="na">test</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="4-curator">4. Curator</h2>
+<h3 id="41-同步方式">4.1 同步方式</h3>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">mydomain</span><span class="o">.</span><span class="na">curator</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.Date</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.concurrent.CountDownLatch</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.apache.commons.lang3.StringUtils</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.curator.RetryPolicy</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.curator.framework.CuratorFramework</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.curator.framework.CuratorFrameworkFactory</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.curator.framework.recipes.cache.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.curator.retry.ExponentialBackoffRetry</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.zookeeper.CreateMode</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.zookeeper.data.Stat</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.mydomain.Test</span><span class="o">;</span>
+
+<span class="cm">/**
+ * @author jyl25609
+ * @version Id: CuratorTest, v 0.1 2017/4/18 16:11 jyl25609 Exp $
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CuratorTest</span> <span class="kd">implements</span> <span class="n">Test</span> <span class="o">{</span>
+    <span class="cm">/** countDown */</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">CountDownLatch</span> <span class="n">countDown</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CountDownLatch</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+
+    <span class="cm">/** 服务器 */</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">String</span>   <span class="n">server</span>    <span class="o">=</span> <span class="s">"192.168.95.128:2181"</span><span class="o">;</span>
+
+    <span class="cm">/** CuratorFramework */</span>
+    <span class="kd">private</span> <span class="n">CuratorFramework</span>      <span class="n">client</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * 测试方法
+     */</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">init</span><span class="o">();</span>
+            <span class="n">start</span><span class="o">();</span>
+            <span class="n">waitForExit</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">client</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">client</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * init
+     */</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">RetryPolicy</span> <span class="n">retryPolicy</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ExponentialBackoffRetry</span><span class="o">(</span><span class="mi">1000</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">CuratorFrameworkFactory</span><span class="o">.</span><span class="na">builder</span><span class="o">().</span><span class="na">connectString</span><span class="o">(</span><span class="n">server</span><span class="o">).</span><span class="na">retryPolicy</span><span class="o">(</span><span class="n">retryPolicy</span><span class="o">).</span><span class="na">sessionTimeoutMs</span><span class="o">(</span><span class="mi">30000</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+        <span class="n">client</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * start
+     *
+     * @throws Exception Exception
+     */</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="n">String</span> <span class="n">rootPath</span> <span class="o">=</span> <span class="s">"/root"</span><span class="o">;</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="kc">null</span> <span class="o">!=</span> <span class="n">client</span><span class="o">.</span><span class="na">checkExists</span><span class="o">().</span><span class="na">forPath</span><span class="o">(</span><span class="n">rootPath</span><span class="o">))</span> <span class="o">{</span>
+            <span class="c1">// 如果节点存在，递归删除</span>
+            <span class="n">client</span><span class="o">.</span><span class="na">delete</span><span class="o">().</span><span class="na">deletingChildrenIfNeeded</span><span class="o">().</span><span class="na">forPath</span><span class="o">(</span><span class="n">rootPath</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="c1">// 创建一个空节点，默认是永久节点</span>
+        <span class="n">client</span><span class="o">.</span><span class="na">create</span><span class="o">().</span><span class="na">forPath</span><span class="o">(</span><span class="n">rootPath</span><span class="o">);</span>
+
+        <span class="c1">// 获取值</span>
+        <span class="kt">byte</span><span class="o">[]</span> <span class="n">data</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">getData</span><span class="o">().</span><span class="na">forPath</span><span class="o">(</span><span class="n">rootPath</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">data</span><span class="o">));</span>
+
+        <span class="c1">// 删除节点</span>
+        <span class="n">client</span><span class="o">.</span><span class="na">delete</span><span class="o">().</span><span class="na">forPath</span><span class="o">(</span><span class="n">rootPath</span><span class="o">);</span>
+        <span class="n">String</span> <span class="n">value</span> <span class="o">=</span> <span class="s">"root"</span><span class="o">;</span>
+
+        <span class="c1">// 创建一个值为"root"的永久节点</span>
+        <span class="n">client</span><span class="o">.</span><span class="na">create</span><span class="o">().</span><span class="na">forPath</span><span class="o">(</span><span class="n">rootPath</span><span class="o">,</span> <span class="n">value</span><span class="o">.</span><span class="na">getBytes</span><span class="o">());</span>
+
+        <span class="c1">// 节点数据变更</span>
+        <span class="n">dataChanged</span><span class="o">(</span><span class="n">client</span><span class="o">,</span> <span class="n">rootPath</span><span class="o">);</span>
+        <span class="n">childrenChanged</span><span class="o">(</span><span class="n">client</span><span class="o">,</span> <span class="n">rootPath</span><span class="o">);</span>
+
+        <span class="c1">// 获取值</span>
+        <span class="n">Stat</span> <span class="n">stat</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Stat</span><span class="o">();</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">getData</span><span class="o">().</span><span class="na">storingStatIn</span><span class="o">(</span><span class="n">stat</span><span class="o">).</span><span class="na">forPath</span><span class="o">(</span><span class="n">rootPath</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">data</span><span class="o">));</span>
+
+        <span class="c1">// 创建临时节点</span>
+        <span class="n">String</span> <span class="n">path</span> <span class="o">=</span> <span class="n">rootPath</span> <span class="o">+</span> <span class="s">"/"</span> <span class="o">+</span> <span class="s">"c1"</span><span class="o">;</span>
+        <span class="n">client</span><span class="o">.</span><span class="na">create</span><span class="o">().</span><span class="na">withMode</span><span class="o">(</span><span class="n">CreateMode</span><span class="o">.</span><span class="na">EPHEMERAL</span><span class="o">).</span><span class="na">forPath</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="n">path</span><span class="o">.</span><span class="na">getBytes</span><span class="o">());</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">rootPath</span> <span class="o">+</span> <span class="s">"/"</span> <span class="o">+</span> <span class="s">"c2"</span><span class="o">;</span>
+        <span class="n">client</span><span class="o">.</span><span class="na">create</span><span class="o">().</span><span class="na">withMode</span><span class="o">(</span><span class="n">CreateMode</span><span class="o">.</span><span class="na">EPHEMERAL</span><span class="o">).</span><span class="na">forPath</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="n">path</span><span class="o">.</span><span class="na">getBytes</span><span class="o">());</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">rootPath</span> <span class="o">+</span> <span class="s">"/"</span> <span class="o">+</span> <span class="s">"c3"</span><span class="o">;</span>
+        <span class="n">client</span><span class="o">.</span><span class="na">create</span><span class="o">().</span><span class="na">withMode</span><span class="o">(</span><span class="n">CreateMode</span><span class="o">.</span><span class="na">EPHEMERAL</span><span class="o">).</span><span class="na">forPath</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="n">path</span><span class="o">.</span><span class="na">getBytes</span><span class="o">());</span>
+
+        <span class="c1">// 更新数据</span>
+        <span class="n">client</span><span class="o">.</span><span class="na">setData</span><span class="o">().</span><span class="na">forPath</span><span class="o">(</span><span class="n">path</span><span class="o">,</span> <span class="o">(</span><span class="k">new</span> <span class="n">Date</span><span class="o">()).</span><span class="na">toString</span><span class="o">().</span><span class="na">getBytes</span><span class="o">());</span>
+
+        <span class="c1">// 获取子节点</span>
+        <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">children</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">getChildren</span><span class="o">().</span><span class="na">forPath</span><span class="o">(</span><span class="n">rootPath</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">join</span><span class="o">(</span><span class="n">children</span><span class="o">,</span> <span class="s">","</span><span class="o">));</span>
+
+        <span class="c1">// 递归创建和删除节点</span>
+        <span class="c1">// client.create().creatingParentsIfNeeded().forPath("", "".getBytes());</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * dataChanged
+     *
+     * @param client client
+     * @param path path
+     * @throws Exception Exception
+     */</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">dataChanged</span><span class="o">(</span><span class="n">CuratorFramework</span> <span class="n">client</span><span class="o">,</span> <span class="n">String</span> <span class="n">path</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="n">NodeCache</span> <span class="n">nodeCache</span> <span class="o">=</span> <span class="k">new</span> <span class="n">NodeCache</span><span class="o">(</span><span class="n">client</span><span class="o">,</span> <span class="n">path</span><span class="o">);</span>
+        <span class="n">nodeCache</span><span class="o">.</span><span class="na">getListenable</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">new</span> <span class="n">NodeCacheListenerImpl</span><span class="o">(</span><span class="n">nodeCache</span><span class="o">));</span>
+        <span class="n">nodeCache</span><span class="o">.</span><span class="na">start</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * childrenChanged
+     *
+     * @param client client
+     * @param path path
+     * @throws Exception Exception
+     */</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">childrenChanged</span><span class="o">(</span><span class="n">CuratorFramework</span> <span class="n">client</span><span class="o">,</span> <span class="n">String</span> <span class="n">path</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="n">PathChildrenCache</span> <span class="n">pathChildrenCache</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PathChildrenCache</span><span class="o">(</span><span class="n">client</span><span class="o">,</span> <span class="n">path</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+        <span class="n">pathChildrenCache</span><span class="o">.</span><span class="na">getListenable</span><span class="o">().</span><span class="na">addListener</span><span class="o">(</span><span class="k">new</span> <span class="n">PathChildrenCacheListenerImpl</span><span class="o">());</span>
+        <span class="n">pathChildrenCache</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 等待退出
+     */</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">waitForExit</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">countDown</span><span class="o">.</span><span class="na">await</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * NodeCacheListenerImpl
+     */</span>
+    <span class="kd">class</span> <span class="nc">NodeCacheListenerImpl</span> <span class="kd">implements</span> <span class="n">NodeCacheListener</span> <span class="o">{</span>
+        <span class="cm">/** NodeCache */</span>
+        <span class="kd">private</span> <span class="n">NodeCache</span> <span class="n">nodeCache</span><span class="o">;</span>
+
+        <span class="cm">/**
+         * NodeCacheListenerImpl
+         *
+         * @param nodeCache nodeCache
+         */</span>
+        <span class="kd">public</span> <span class="nf">NodeCacheListenerImpl</span><span class="o">(</span><span class="n">NodeCache</span> <span class="n">nodeCache</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">nodeCache</span> <span class="o">=</span> <span class="n">nodeCache</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="cm">/**
+         * nodeChanged
+         *
+         * @throws Exception Exception
+         */</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">nodeChanged</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"path:%s, data:%s, stat:%s"</span><span class="o">,</span> <span class="n">nodeCache</span><span class="o">.</span><span class="na">getCurrentData</span><span class="o">().</span><span class="na">getPath</span><span class="o">(),</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">nodeCache</span><span class="o">.</span><span class="na">getCurrentData</span><span class="o">().</span><span class="na">getData</span><span class="o">()),</span>
+                <span class="n">nodeCache</span><span class="o">.</span><span class="na">getCurrentData</span><span class="o">().</span><span class="na">getStat</span><span class="o">()));</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * PathChildrenCacheListenerImpl
+     */</span>
+    <span class="kd">class</span> <span class="nc">PathChildrenCacheListenerImpl</span> <span class="kd">implements</span> <span class="n">PathChildrenCacheListener</span> <span class="o">{</span>
+        <span class="cm">/**
+         * Called when a change has occurred
+         *
+         * @param client the client
+         * @param event  describes the change
+         * @throws Exception errors
+         */</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">childEvent</span><span class="o">(</span><span class="n">CuratorFramework</span> <span class="n">client</span><span class="o">,</span> <span class="n">PathChildrenCacheEvent</span> <span class="n">event</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">event</span><span class="o">);</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"path:%s, data:%s, stat:%s"</span><span class="o">,</span> <span class="n">event</span><span class="o">.</span><span class="na">getData</span><span class="o">().</span><span class="na">getPath</span><span class="o">(),</span> <span class="k">new</span> <span class="n">String</span><span class="o">(</span><span class="n">event</span><span class="o">.</span><span class="na">getData</span><span class="o">().</span><span class="na">getData</span><span class="o">()),</span> <span class="n">event</span><span class="o">.</span><span class="na">getData</span><span class="o">().</span><span class="na">getStat</span><span class="o">()));</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<h3 id="42-异步方式">4.2 异步方式</h3>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">mydomain</span><span class="o">.</span><span class="na">curator</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.concurrent.CountDownLatch</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.concurrent.TimeUnit</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.apache.curator.RetryPolicy</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.curator.framework.CuratorFramework</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.curator.framework.CuratorFrameworkFactory</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.curator.framework.api.BackgroundCallback</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.curator.framework.api.CuratorEvent</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.curator.retry.ExponentialBackoffRetry</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.zookeeper.CreateMode</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">com.mydomain.Test</span><span class="o">;</span>
+
+<span class="cm">/**
+ * @author jyl25609
+ * @version Id: CuratorAsyncTest, v 0.1 2017/4/18 18:30 jyl25609 Exp $
+ */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CuratorAsyncTest</span> <span class="kd">implements</span> <span class="n">Test</span> <span class="o">{</span>
+    <span class="cm">/** countDown */</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">CountDownLatch</span> <span class="n">countDown</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CountDownLatch</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+
+    <span class="cm">/** 服务器 */</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="kd">static</span> <span class="n">String</span>   <span class="n">server</span>    <span class="o">=</span> <span class="s">"192.168.95.128:2181"</span><span class="o">;</span>
+
+    <span class="cm">/** CuratorFramework */</span>
+    <span class="kd">private</span> <span class="n">CuratorFramework</span>      <span class="n">client</span><span class="o">;</span>
+
+    <span class="cm">/**
+     * 测试方法
+     */</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">init</span><span class="o">();</span>
+            <span class="n">start</span><span class="o">();</span>
+            <span class="n">waitForExit</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">client</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">client</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * init
+     */</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">RetryPolicy</span> <span class="n">retryPolicy</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ExponentialBackoffRetry</span><span class="o">(</span><span class="mi">1000</span><span class="o">,</span> <span class="mi">3</span><span class="o">);</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="n">CuratorFrameworkFactory</span><span class="o">.</span><span class="na">builder</span><span class="o">().</span><span class="na">connectString</span><span class="o">(</span><span class="n">server</span><span class="o">).</span><span class="na">retryPolicy</span><span class="o">(</span><span class="n">retryPolicy</span><span class="o">).</span><span class="na">sessionTimeoutMs</span><span class="o">(</span><span class="mi">30000</span><span class="o">).</span><span class="na">build</span><span class="o">();</span>
+        <span class="n">client</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * start
+     *
+     * @throws Exception Exception
+     */</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+        <span class="n">String</span> <span class="n">rootPath</span> <span class="o">=</span> <span class="s">"/root"</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="kc">null</span> <span class="o">!=</span> <span class="n">client</span><span class="o">.</span><span class="na">checkExists</span><span class="o">().</span><span class="na">forPath</span><span class="o">(</span><span class="n">rootPath</span><span class="o">))</span> <span class="o">{</span>
+            <span class="c1">// 如果节点存在，递归删除</span>
+            <span class="n">client</span><span class="o">.</span><span class="na">delete</span><span class="o">().</span><span class="na">deletingChildrenIfNeeded</span><span class="o">().</span><span class="na">forPath</span><span class="o">(</span><span class="n">rootPath</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="n">BackgroundCallback</span> <span class="n">backgroundCallback</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BackgroundCallbackImpl</span><span class="o">();</span>
+        <span class="n">client</span><span class="o">.</span><span class="na">create</span><span class="o">().</span><span class="na">withMode</span><span class="o">(</span><span class="n">CreateMode</span><span class="o">.</span><span class="na">EPHEMERAL</span><span class="o">).</span><span class="na">inBackground</span><span class="o">(</span><span class="n">backgroundCallback</span><span class="o">).</span><span class="na">forPath</span><span class="o">(</span><span class="n">rootPath</span><span class="o">,</span> <span class="n">rootPath</span><span class="o">.</span><span class="na">getBytes</span><span class="o">());</span>
+        <span class="n">TimeUnit</span><span class="o">.</span><span class="na">SECONDS</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">2</span><span class="o">);</span>
+
+        <span class="n">client</span><span class="o">.</span><span class="na">getData</span><span class="o">().</span><span class="na">inBackground</span><span class="o">(</span><span class="n">backgroundCallback</span><span class="o">).</span><span class="na">forPath</span><span class="o">(</span><span class="n">rootPath</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 等待退出
+     */</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">waitForExit</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">countDown</span><span class="o">.</span><span class="na">await</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * BackgroundCallbackImpl
+     */</span>
+    <span class="kd">class</span> <span class="nc">BackgroundCallbackImpl</span> <span class="kd">implements</span> <span class="n">BackgroundCallback</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="kt">void</span> <span class="nf">processResult</span><span class="o">(</span><span class="n">CuratorFramework</span> <span class="n">curatorFramework</span><span class="o">,</span> <span class="n">CuratorEvent</span> <span class="n">curatorEvent</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">curatorEvent</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+  </div>
+
+  
+</article>
+
+
+      <footer class="site-footer">
+        <!-- SVG icons from https://iconmonstr.com -->
+
+        <!-- Github icon -->
+        <span class="my-span-icon">
+          <a href="https://github.com/jylaxp" aria-label="jylaxp's GitHub" title="jylaxp's GitHub">
+            <svg class="my-svg-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          </a>
+        </span>
+
+        <!-- Twitter icon
+        <span class="my-span-icon">
+          <a href="https://twitter.com/" aria-label="jylaxp's Twitter" title="jylaxp's Twitter">
+            <svg class="my-svg-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6.066 9.645c.183 4.04-2.83 8.544-8.164 8.544-1.622 0-3.131-.476-4.402-1.291 1.524.18 3.045-.244 4.252-1.189-1.256-.023-2.317-.854-2.684-1.995.451.086.895.061 1.298-.049-1.381-.278-2.335-1.522-2.304-2.853.388.215.83.344 1.301.359-1.279-.855-1.641-2.544-.889-3.835 1.416 1.738 3.533 2.881 5.92 3.001-.419-1.796.944-3.527 2.799-3.527.825 0 1.572.349 2.096.907.654-.128 1.27-.368 1.824-.697-.215.671-.67 1.233-1.263 1.589.581-.07 1.135-.224 1.649-.453-.384.578-.87 1.084-1.433 1.489z"/></svg>
+          </a>
+        </span>
+ -->
+        <!-- RSS icon -->
+        
+        <!-- Contact icon -->
+        
+        
+          <span class="my-span-icon">
+            <a href="/about.html" aria-label="Contact" title="Contact jylaxp">
+              <svg class="my-svg-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 .02c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6.99 6.98l-6.99 5.666-6.991-5.666h13.981zm.01 10h-14v-8.505l7 5.673 7-5.672v8.504z"/></svg>
+            </a>
+          </span>
+        
+
+      </footer>
+    </section>
+
+    
+  </body>
+</html>
