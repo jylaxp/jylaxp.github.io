@@ -409,5 +409,69 @@ documentReader.registerBeanDefinitions(doc, createReaderContext(resource));
 ```
 这个行代码里的createReaderContext(resource)，它是获取一个XmlReaderContext对象，解析BeanDefinition要用到的上下文，它为自定义spring schemas提供了扩展，以注解定义的BeanDefinition的解析也是通过这种方式做的扩展，这里不深入分析，在后面分析解析以注解方式定义的bean时在深入的研究。
 
+```java
+protected void doRegisterBeanDefinitions(Element root) {
+	// Any nested <beans> elements will cause recursion in this method. In
+	// order to propagate and preserve <beans> default-* attributes correctly,
+	// keep track of the current (parent) delegate, which may be null. Create
+	// the new (child) delegate with a reference to the parent for fallback purposes,
+	// then ultimately reset this.delegate back to its original (parent) reference.
+	// this behavior emulates a stack of delegates without actually necessitating one.
+	BeanDefinitionParserDelegate parent = this.delegate;
+	this.delegate = createDelegate(getReaderContext(), root, parent);
+
+	if (this.delegate.isDefaultNamespace(root)) {
+		String profileSpec = root.getAttribute(PROFILE_ATTRIBUTE);
+		if (StringUtils.hasText(profileSpec)) {
+			String[] specifiedProfiles = StringUtils.tokenizeToStringArray(
+					profileSpec, BeanDefinitionParserDelegate.MULTI_VALUE_ATTRIBUTE_DELIMITERS);
+			if (!getReaderContext().getEnvironment().acceptsProfiles(specifiedProfiles)) {
+				if (logger.isInfoEnabled()) {
+					logger.info("Skipped XML bean definition file due to specified profiles [" + profileSpec +
+							"] not matching: " + getReaderContext().getResource());
+				}
+				return;
+			}
+		}
+	}
+
+	preProcessXml(root);
+	parseBeanDefinitions(root, this.delegate);
+	postProcessXml(root);
+
+	this.delegate = parent;
+}
+```
+上面那堆注释是来解析第一行代码和最后一行代码的，解释为什么要这样做。这里解释一下，这是什么场景。该方法可以看做是对```<beans/>```节点的解析,如果```<beans/>```节点嵌套了```<beans/>```节点，则该方法会递归调用，但是每个```<beans/>```节点都有它自己的默认值，默认值的解析和暂存都是在BeanDefinitionParserDelegate这个委托中的，也就是说这个委托关联了```<beans/>```的默认值，当```<beans/>```发生嵌套，递归调用此方法，如果不是重新创建一个委托，而是使用原来的委托，则会改变该委托暂存的默认值，导致解析错误。
+```java
+if (this.delegate.isDefaultNamespace(root)) {
+	String profileSpec = root.getAttribute(PROFILE_ATTRIBUTE);
+	if (StringUtils.hasText(profileSpec)) {
+		String[] specifiedProfiles = StringUtils.tokenizeToStringArray(
+				profileSpec, BeanDefinitionParserDelegate.MULTI_VALUE_ATTRIBUTE_DELIMITERS);
+		if (!getReaderContext().getEnvironment().acceptsProfiles(specifiedProfiles)) {
+			if (logger.isInfoEnabled()) {
+				logger.info("Skipped XML bean definition file due to specified profiles [" + profileSpec +
+						"] not matching: " + getReaderContext().getResource());
+			}
+			return;
+		}
+	}
+}
+```
+这个是和profile有关，暂不研究。
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
