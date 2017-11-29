@@ -366,7 +366,7 @@
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Create a new XmlBeanDefinitionReader for the given BeanFactory.</span>
 <span class="n">XmlBeanDefinitionReader</span> <span class="n">beanDefinitionReader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">XmlBeanDefinitionReader</span><span class="o">(</span><span class="n">beanFactory</span><span class="o">);</span>
 </code></pre></div></div>
-<p>首先，创建了一个XmlBeanDefinitionReader，看名字就只可以知道，这个XmlBeanDefinitionReader要干的事情就是就是从xml读取BeanDefinition。XmlBeanDefinitionReader的构造方法的参数这里参入的beanFactory，我们臆测，XmlBeanDefinitionReader读取的BeanDefinition就是注册到这个beanFacctory容器里的。看一下XmlBeanDefinitionReader的构方法，参数类型是BeanDefinitionRegistr，这个是一个接口，提供BeanDefinition注册功能，可以看一下DefaultListableBeanFactory类的关系，可以看到DefaultListableBeanFactory实现了BeanDefinitionRegistry接口。</p>
+<p>首先，创建了一个XmlBeanDefinitionReader，看名字就只可以知道，这个XmlBeanDefinitionReader要干的事情就是就是从xml读取BeanDefinition。XmlBeanDefinitionReader的构造方法的参数这里参入的beanFactory，我们臆测，XmlBeanDefinitionReader读取的BeanDefinition就是注册到这个beanFacctory容器里的。看一下XmlBeanDefinitionReader的构方法，参数类型是BeanDefinitionRegistr，这个是一个接口，提供BeanDefinition注册功能，可以看一下DefaultListableBeanFactory类的关系，可以看到DefaultListableBeanFactory实现了BeanDefinitionRegistry接口，DefaultListableBeanFactory本身也是一个Registry。</p>
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
  * Create new XmlBeanDefinitionReader for the given bean factory.
  * @param registry the BeanFactory to load bean definitions into,
@@ -600,6 +600,624 @@
 </code></pre></div></div>
 <p>这个行代码里的createReaderContext(resource)，它是获取一个XmlReaderContext对象，解析BeanDefinition要用到的上下文，它为自定义spring schemas提供了扩展，以注解定义的BeanDefinition的解析也是通过这种方式做的扩展，这里不深入分析，在后面分析解析以注解方式定义的bean时在深入的研究。</p>
 
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doRegisterBeanDefinitions</span><span class="o">(</span><span class="n">Element</span> <span class="n">root</span><span class="o">)</span> <span class="o">{</span>
+	<span class="c1">// Any nested &lt;beans&gt; elements will cause recursion in this method. In</span>
+	<span class="c1">// order to propagate and preserve &lt;beans&gt; default-* attributes correctly,</span>
+	<span class="c1">// keep track of the current (parent) delegate, which may be null. Create</span>
+	<span class="c1">// the new (child) delegate with a reference to the parent for fallback purposes,</span>
+	<span class="c1">// then ultimately reset this.delegate back to its original (parent) reference.</span>
+	<span class="c1">// this behavior emulates a stack of delegates without actually necessitating one.</span>
+	<span class="n">BeanDefinitionParserDelegate</span> <span class="n">parent</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">delegate</span><span class="o">;</span>
+	<span class="k">this</span><span class="o">.</span><span class="na">delegate</span> <span class="o">=</span> <span class="n">createDelegate</span><span class="o">(</span><span class="n">getReaderContext</span><span class="o">(),</span> <span class="n">root</span><span class="o">,</span> <span class="n">parent</span><span class="o">);</span>
+
+	<span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">delegate</span><span class="o">.</span><span class="na">isDefaultNamespace</span><span class="o">(</span><span class="n">root</span><span class="o">))</span> <span class="o">{</span>
+		<span class="n">String</span> <span class="n">profileSpec</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="n">PROFILE_ATTRIBUTE</span><span class="o">);</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasText</span><span class="o">(</span><span class="n">profileSpec</span><span class="o">))</span> <span class="o">{</span>
+			<span class="n">String</span><span class="o">[]</span> <span class="n">specifiedProfiles</span> <span class="o">=</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">tokenizeToStringArray</span><span class="o">(</span>
+					<span class="n">profileSpec</span><span class="o">,</span> <span class="n">BeanDefinitionParserDelegate</span><span class="o">.</span><span class="na">MULTI_VALUE_ATTRIBUTE_DELIMITERS</span><span class="o">);</span>
+			<span class="k">if</span> <span class="o">(!</span><span class="n">getReaderContext</span><span class="o">().</span><span class="na">getEnvironment</span><span class="o">().</span><span class="na">acceptsProfiles</span><span class="o">(</span><span class="n">specifiedProfiles</span><span class="o">))</span> <span class="o">{</span>
+				<span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isInfoEnabled</span><span class="o">())</span> <span class="o">{</span>
+					<span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"Skipped XML bean definition file due to specified profiles ["</span> <span class="o">+</span> <span class="n">profileSpec</span> <span class="o">+</span>
+							<span class="s">"] not matching: "</span> <span class="o">+</span> <span class="n">getReaderContext</span><span class="o">().</span><span class="na">getResource</span><span class="o">());</span>
+				<span class="o">}</span>
+				<span class="k">return</span><span class="o">;</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+
+	<span class="n">preProcessXml</span><span class="o">(</span><span class="n">root</span><span class="o">);</span>
+	<span class="n">parseBeanDefinitions</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">delegate</span><span class="o">);</span>
+	<span class="n">postProcessXml</span><span class="o">(</span><span class="n">root</span><span class="o">);</span>
+
+	<span class="k">this</span><span class="o">.</span><span class="na">delegate</span> <span class="o">=</span> <span class="n">parent</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>上面那堆注释是来解析第一行代码和最后一行代码的，解释为什么要这样做。这里解释一下，这是什么场景。该方法可以看做是对<code class="highlighter-rouge">&lt;beans/&gt;</code>节点的解析,如果<code class="highlighter-rouge">&lt;beans/&gt;</code>节点嵌套了<code class="highlighter-rouge">&lt;beans/&gt;</code>节点，则该方法会递归调用，但是每个<code class="highlighter-rouge">&lt;beans/&gt;</code>节点都有它自己的默认值，默认值的解析和暂存都是在BeanDefinitionParserDelegate这个委托中的，也就是说这个委托关联了<code class="highlighter-rouge">&lt;beans/&gt;</code>的默认值，当<code class="highlighter-rouge">&lt;beans/&gt;</code>发生嵌套，递归调用此方法，如果不是重新创建一个委托，而是使用原来的委托，则会改变该委托暂存的默认值，导致解析错误。看一下<code class="highlighter-rouge">createDelegate(getReaderContext(), root, parent)</code>的代码</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protected</span> <span class="n">BeanDefinitionParserDelegate</span> <span class="nf">createDelegate</span><span class="o">(</span>
+		<span class="n">XmlReaderContext</span> <span class="n">readerContext</span><span class="o">,</span> <span class="n">Element</span> <span class="n">root</span><span class="o">,</span> <span class="n">BeanDefinitionParserDelegate</span> <span class="n">parentDelegate</span><span class="o">)</span> <span class="o">{</span>
+
+	<span class="n">BeanDefinitionParserDelegate</span> <span class="n">delegate</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BeanDefinitionParserDelegate</span><span class="o">(</span><span class="n">readerContext</span><span class="o">);</span>
+	<span class="n">delegate</span><span class="o">.</span><span class="na">initDefaults</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="n">parentDelegate</span><span class="o">);</span>
+	<span class="k">return</span> <span class="n">delegate</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>可以看到，这个创建了一个新的BeanDefinitionParserDelegate对象，并调用它的<code class="highlighter-rouge">initDefaults</code>方法初始化了默认值。</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">delegate</span><span class="o">.</span><span class="na">isDefaultNamespace</span><span class="o">(</span><span class="n">root</span><span class="o">))</span> <span class="o">{</span>
+	<span class="n">String</span> <span class="n">profileSpec</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="n">PROFILE_ATTRIBUTE</span><span class="o">);</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasText</span><span class="o">(</span><span class="n">profileSpec</span><span class="o">))</span> <span class="o">{</span>
+		<span class="n">String</span><span class="o">[]</span> <span class="n">specifiedProfiles</span> <span class="o">=</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">tokenizeToStringArray</span><span class="o">(</span>
+				<span class="n">profileSpec</span><span class="o">,</span> <span class="n">BeanDefinitionParserDelegate</span><span class="o">.</span><span class="na">MULTI_VALUE_ATTRIBUTE_DELIMITERS</span><span class="o">);</span>
+		<span class="k">if</span> <span class="o">(!</span><span class="n">getReaderContext</span><span class="o">().</span><span class="na">getEnvironment</span><span class="o">().</span><span class="na">acceptsProfiles</span><span class="o">(</span><span class="n">specifiedProfiles</span><span class="o">))</span> <span class="o">{</span>
+			<span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isInfoEnabled</span><span class="o">())</span> <span class="o">{</span>
+				<span class="n">logger</span><span class="o">.</span><span class="na">info</span><span class="o">(</span><span class="s">"Skipped XML bean definition file due to specified profiles ["</span> <span class="o">+</span> <span class="n">profileSpec</span> <span class="o">+</span>
+						<span class="s">"] not matching: "</span> <span class="o">+</span> <span class="n">getReaderContext</span><span class="o">().</span><span class="na">getResource</span><span class="o">());</span>
+			<span class="o">}</span>
+			<span class="k">return</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>这个是和profile有关，暂不研究。</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">preProcessXml</span><span class="o">(</span><span class="n">root</span><span class="o">);</span>
+<span class="n">parseBeanDefinitions</span><span class="o">(</span><span class="n">root</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">delegate</span><span class="o">);</span>
+<span class="n">postProcessXml</span><span class="o">(</span><span class="n">root</span><span class="o">);</span>
+</code></pre></div></div>
+<p>preProcessXml(root)和postProcessXml(root)都是空实现，留给子类扩展，parseBeanDefinitions(root, this.delegate)才是我们翻山越岭要找的真相。</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">parseBeanDefinitions</span><span class="o">(</span><span class="n">Element</span> <span class="n">root</span><span class="o">,</span> <span class="n">BeanDefinitionParserDelegate</span> <span class="n">delegate</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">delegate</span><span class="o">.</span><span class="na">isDefaultNamespace</span><span class="o">(</span><span class="n">root</span><span class="o">))</span> <span class="o">{</span>
+		<span class="n">NodeList</span> <span class="n">nl</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="na">getChildNodes</span><span class="o">();</span>
+		<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nl</span><span class="o">.</span><span class="na">getLength</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="n">Node</span> <span class="n">node</span> <span class="o">=</span> <span class="n">nl</span><span class="o">.</span><span class="na">item</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+			<span class="k">if</span> <span class="o">(</span><span class="n">node</span> <span class="k">instanceof</span> <span class="n">Element</span><span class="o">)</span> <span class="o">{</span>
+				<span class="n">Element</span> <span class="n">ele</span> <span class="o">=</span> <span class="o">(</span><span class="n">Element</span><span class="o">)</span> <span class="n">node</span><span class="o">;</span>
+				<span class="k">if</span> <span class="o">(</span><span class="n">delegate</span><span class="o">.</span><span class="na">isDefaultNamespace</span><span class="o">(</span><span class="n">ele</span><span class="o">))</span> <span class="o">{</span>
+					<span class="n">parseDefaultElement</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">delegate</span><span class="o">);</span>
+				<span class="o">}</span>
+				<span class="k">else</span> <span class="o">{</span>
+					<span class="n">delegate</span><span class="o">.</span><span class="na">parseCustomElement</span><span class="o">(</span><span class="n">ele</span><span class="o">);</span>
+				<span class="o">}</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="o">{</span>
+		<span class="n">delegate</span><span class="o">.</span><span class="na">parseCustomElement</span><span class="o">(</span><span class="n">root</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>先判断root节点是否是默认的命名空间<code class="highlighter-rouge">http://www.springframework.org/schema/beans</code>，如果是，这个按照默认提供的解析逻辑解析该节点，否则是通过spring schemas提供了扩展，则按照扩展的标签的逻辑解析，注解定义的bean也是通过这种方式提供的解析处理逻辑，后面分析注解定义的bean扫描和自定扩展标签的时候就从这个地方入手，前面的逻辑就不重复了。 我们先分析默认元素的解析。</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">private</span> <span class="kt">void</span> <span class="nf">parseDefaultElement</span><span class="o">(</span><span class="n">Element</span> <span class="n">ele</span><span class="o">,</span> <span class="n">BeanDefinitionParserDelegate</span> <span class="n">delegate</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">delegate</span><span class="o">.</span><span class="na">nodeNameEquals</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">IMPORT_ELEMENT</span><span class="o">))</span> <span class="o">{</span>
+		<span class="n">importBeanDefinitionResource</span><span class="o">(</span><span class="n">ele</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">delegate</span><span class="o">.</span><span class="na">nodeNameEquals</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">ALIAS_ELEMENT</span><span class="o">))</span> <span class="o">{</span>
+		<span class="n">processAliasRegistration</span><span class="o">(</span><span class="n">ele</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">delegate</span><span class="o">.</span><span class="na">nodeNameEquals</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">BEAN_ELEMENT</span><span class="o">))</span> <span class="o">{</span>
+		<span class="n">processBeanDefinition</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">delegate</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">delegate</span><span class="o">.</span><span class="na">nodeNameEquals</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">NESTED_BEANS_ELEMENT</span><span class="o">))</span> <span class="o">{</span>
+		<span class="c1">// recurse</span>
+		<span class="n">doRegisterBeanDefinitions</span><span class="o">(</span><span class="n">ele</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>这里处理了４种情况:</p>
+
+<ul>
+  <li>处理<code class="highlighter-rouge">&lt;import/&gt;</code>标签。<code class="highlighter-rouge">&lt;import/&gt;</code>是导入另外一个spring配置文件，处理逻辑和上面资源定位，读取配置文件，然后解析出BeanDefinition逻辑一样。</li>
+  <li>处理<code class="highlighter-rouge">&lt;alias/&gt;</code>标签。解析别名，这个逻辑比较简单，只要在registry中注册别名和beanName的对应关系即可。</li>
+  <li>处理<code class="highlighter-rouge">&lt;bean/&gt;</code>标签。这个就是解析BeanDefinition了，我们分析的重点。</li>
+  <li>处理<code class="highlighter-rouge">&lt;beans/&gt;</code>标签。处理嵌套的处理<code class="highlighter-rouge">&lt;bean/&gt;</code>标签，可以看到这里递归调用了doRegisterBeanDefinitions方法。
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">processBeanDefinition</span><span class="o">(</span><span class="n">Element</span> <span class="n">ele</span><span class="o">,</span> <span class="n">BeanDefinitionParserDelegate</span> <span class="n">delegate</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">BeanDefinitionHolder</span> <span class="n">bdHolder</span> <span class="o">=</span> <span class="n">delegate</span><span class="o">.</span><span class="na">parseBeanDefinitionElement</span><span class="o">(</span><span class="n">ele</span><span class="o">);</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">bdHolder</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">bdHolder</span> <span class="o">=</span> <span class="n">delegate</span><span class="o">.</span><span class="na">decorateBeanDefinitionIfRequired</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">bdHolder</span><span class="o">);</span>
+      <span class="k">try</span> <span class="o">{</span>
+          <span class="c1">// Register the final decorated instance.</span>
+          <span class="n">BeanDefinitionReaderUtils</span><span class="o">.</span><span class="na">registerBeanDefinition</span><span class="o">(</span><span class="n">bdHolder</span><span class="o">,</span> <span class="n">getReaderContext</span><span class="o">().</span><span class="na">getRegistry</span><span class="o">());</span>
+      <span class="o">}</span>
+      <span class="k">catch</span> <span class="o">(</span><span class="n">BeanDefinitionStoreException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+          <span class="n">getReaderContext</span><span class="o">().</span><span class="na">error</span><span class="o">(</span><span class="s">"Failed to register bean definition with name '"</span> <span class="o">+</span>
+                  <span class="n">bdHolder</span><span class="o">.</span><span class="na">getBeanName</span><span class="o">()</span> <span class="o">+</span> <span class="s">"'"</span><span class="o">,</span> <span class="n">ele</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+      <span class="o">}</span>
+      <span class="c1">// Send registration event.</span>
+      <span class="n">getReaderContext</span><span class="o">().</span><span class="na">fireComponentRegistered</span><span class="o">(</span><span class="k">new</span> <span class="n">BeanComponentDefinition</span><span class="o">(</span><span class="n">bdHolder</span><span class="o">));</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+    <p>processBeanDefinition主要完成了三件事情：</p>
+  </li>
+  <li>使用BeanDefinitionParserDelegate解析出BeanDefinition，但这里返回处理的是BeanDefinitionHolder，为什么是BeanDefinitionHolder，看一下这个类属性，不做解释了。
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BeanDefinitionHolder</span> <span class="kd">implements</span> <span class="n">BeanMetadataElement</span> <span class="o">{</span>
+
+  <span class="kd">private</span> <span class="kd">final</span> <span class="n">BeanDefinition</span> <span class="n">beanDefinition</span><span class="o">;</span>
+
+  <span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">beanName</span><span class="o">;</span>
+
+  <span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span><span class="o">[]</span> <span class="n">aliases</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>装饰解析出来的BeanDefinitionHolder，其实就是装饰BeanDefinition。</li>
+  <li>向registry注册BeanDefinition。
+我们来看<code class="highlighter-rouge">bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);</code>这里做了什么。看代码里加的注释吧，不想啰嗦了。</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * Parses the supplied {@code &lt;bean&gt;} element. May return {@code null}
+ * if there were errors during parse. Errors are reported to the
+ * {@link org.springframework.beans.factory.parsing.ProblemReporter}.
+ */</span>
+<span class="kd">public</span> <span class="n">BeanDefinitionHolder</span> <span class="nf">parseBeanDefinitionElement</span><span class="o">(</span><span class="n">Element</span> <span class="n">ele</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">return</span> <span class="nf">parseBeanDefinitionElement</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="cm">/**
+ * Parses the supplied {@code &lt;bean&gt;} element. May return {@code null}
+ * if there were errors during parse. Errors are reported to the
+ * {@link org.springframework.beans.factory.parsing.ProblemReporter}.
+ */</span>
+<span class="kd">public</span> <span class="n">BeanDefinitionHolder</span> <span class="nf">parseBeanDefinitionElement</span><span class="o">(</span><span class="n">Element</span> <span class="n">ele</span><span class="o">,</span> <span class="n">BeanDefinition</span> <span class="n">containingBean</span><span class="o">)</span> <span class="o">{</span>
+	<span class="c1">// 获取&lt;bean/&gt;标签的id属性(beanName)</span>
+	<span class="n">String</span> <span class="n">id</span> <span class="o">=</span> <span class="n">ele</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="n">ID_ATTRIBUTE</span><span class="o">);</span>
+	
+	<span class="c1">// 获取&lt;bean/&gt;标签的name属性(别名)</span>
+	<span class="n">String</span> <span class="n">nameAttr</span> <span class="o">=</span> <span class="n">ele</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="n">NAME_ATTRIBUTE</span><span class="o">);</span>
+
+	<span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">aliases</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasLength</span><span class="o">(</span><span class="n">nameAttr</span><span class="o">))</span> <span class="o">{</span>
+		<span class="c1">// 别名拆分</span>
+		<span class="n">String</span><span class="o">[]</span> <span class="n">nameArr</span> <span class="o">=</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">tokenizeToStringArray</span><span class="o">(</span><span class="n">nameAttr</span><span class="o">,</span> <span class="n">MULTI_VALUE_ATTRIBUTE_DELIMITERS</span><span class="o">);</span>
+		<span class="n">aliases</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="n">nameArr</span><span class="o">));</span>
+	<span class="o">}</span>
+
+	<span class="n">String</span> <span class="n">beanName</span> <span class="o">=</span> <span class="n">id</span><span class="o">;</span>
+	<span class="k">if</span> <span class="o">(!</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasText</span><span class="o">(</span><span class="n">beanName</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">aliases</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+		<span class="c1">// 如果没有配置beanNam，但是配置了别名，取第一个别名作为beanName</span>
+		<span class="n">beanName</span> <span class="o">=</span> <span class="n">aliases</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+			<span class="n">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"No XML 'id' specified - using '"</span> <span class="o">+</span> <span class="n">beanName</span> <span class="o">+</span>
+					<span class="s">"' as bean name and "</span> <span class="o">+</span> <span class="n">aliases</span> <span class="o">+</span> <span class="s">" as aliases"</span><span class="o">);</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+
+	<span class="k">if</span> <span class="o">(</span><span class="n">containingBean</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">// 检查beanName和别名的唯一性。</span>
+		<span class="c1">// 这里的唯一性是在同一容器中唯一而不是一个应用中唯一，在不同的容器中可以重复，比如有父子关系的两个容器，可以有相同beanName和别名的bean</span>
+		<span class="n">checkNameUniqueness</span><span class="o">(</span><span class="n">beanName</span><span class="o">,</span> <span class="n">aliases</span><span class="o">,</span> <span class="n">ele</span><span class="o">);</span>
+	<span class="o">}</span>
+
+	<span class="c1">// 解析beanDefinition</span>
+	<span class="n">AbstractBeanDefinition</span> <span class="n">beanDefinition</span> <span class="o">=</span> <span class="n">parseBeanDefinitionElement</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">beanName</span><span class="o">,</span> <span class="n">containingBean</span><span class="o">);</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">beanDefinition</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">// 如果还是没有beanName，则自动生成beanName</span>
+		<span class="k">if</span> <span class="o">(!</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasText</span><span class="o">(</span><span class="n">beanName</span><span class="o">))</span> <span class="o">{</span>
+			<span class="k">try</span> <span class="o">{</span>
+				<span class="k">if</span> <span class="o">(</span><span class="n">containingBean</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+					<span class="n">beanName</span> <span class="o">=</span> <span class="n">BeanDefinitionReaderUtils</span><span class="o">.</span><span class="na">generateBeanName</span><span class="o">(</span>
+							<span class="n">beanDefinition</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">readerContext</span><span class="o">.</span><span class="na">getRegistry</span><span class="o">(),</span> <span class="kc">true</span><span class="o">);</span>
+				<span class="o">}</span>
+				<span class="k">else</span> <span class="o">{</span>
+					<span class="n">beanName</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="na">readerContext</span><span class="o">.</span><span class="na">generateBeanName</span><span class="o">(</span><span class="n">beanDefinition</span><span class="o">);</span>
+					<span class="c1">// Register an alias for the plain bean class name, if still possible,</span>
+					<span class="c1">// if the generator returned the class name plus a suffix.</span>
+					<span class="c1">// This is expected for Spring 1.2/2.0 backwards compatibility.</span>
+					<span class="n">String</span> <span class="n">beanClassName</span> <span class="o">=</span> <span class="n">beanDefinition</span><span class="o">.</span><span class="na">getBeanClassName</span><span class="o">();</span>
+					<span class="k">if</span> <span class="o">(</span><span class="n">beanClassName</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span>
+							<span class="n">beanName</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="n">beanClassName</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">beanName</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&gt;</span> <span class="n">beanClassName</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&amp;&amp;</span>
+							<span class="o">!</span><span class="k">this</span><span class="o">.</span><span class="na">readerContext</span><span class="o">.</span><span class="na">getRegistry</span><span class="o">().</span><span class="na">isBeanNameInUse</span><span class="o">(</span><span class="n">beanClassName</span><span class="o">))</span> <span class="o">{</span>
+						<span class="n">aliases</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">beanClassName</span><span class="o">);</span>
+					<span class="o">}</span>
+				<span class="o">}</span>
+				<span class="k">if</span> <span class="o">(</span><span class="n">logger</span><span class="o">.</span><span class="na">isDebugEnabled</span><span class="o">())</span> <span class="o">{</span>
+					<span class="n">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Neither XML 'id' nor 'name' specified - "</span> <span class="o">+</span>
+							<span class="s">"using generated bean name ["</span> <span class="o">+</span> <span class="n">beanName</span> <span class="o">+</span> <span class="s">"]"</span><span class="o">);</span>
+				<span class="o">}</span>
+			<span class="o">}</span>
+			<span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+				<span class="n">error</span><span class="o">(</span><span class="n">ex</span><span class="o">.</span><span class="na">getMessage</span><span class="o">(),</span> <span class="n">ele</span><span class="o">);</span>
+				<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		<span class="n">String</span><span class="o">[]</span> <span class="n">aliasesArray</span> <span class="o">=</span> <span class="n">StringUtils</span><span class="o">.</span><span class="na">toStringArray</span><span class="o">(</span><span class="n">aliases</span><span class="o">);</span>
+		<span class="k">return</span> <span class="k">new</span> <span class="nf">BeanDefinitionHolder</span><span class="o">(</span><span class="n">beanDefinition</span><span class="o">,</span> <span class="n">beanName</span><span class="o">,</span> <span class="n">aliasesArray</span><span class="o">);</span>
+	<span class="o">}</span>
+
+	<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>接着看beanDefinition解析parseBeanDefinitionElement</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="n">AbstractBeanDefinition</span> <span class="nf">parseBeanDefinitionElement</span><span class="o">(</span>
+		<span class="n">Element</span> <span class="n">ele</span><span class="o">,</span> <span class="n">String</span> <span class="n">beanName</span><span class="o">,</span> <span class="n">BeanDefinition</span> <span class="n">containingBean</span><span class="o">)</span> <span class="o">{</span>
+
+	<span class="k">this</span><span class="o">.</span><span class="na">parseState</span><span class="o">.</span><span class="na">push</span><span class="o">(</span><span class="k">new</span> <span class="n">BeanEntry</span><span class="o">(</span><span class="n">beanName</span><span class="o">));</span>
+
+	<span class="n">String</span> <span class="n">className</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="c1">// 解析class属性</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">ele</span><span class="o">.</span><span class="na">hasAttribute</span><span class="o">(</span><span class="n">CLASS_ATTRIBUTE</span><span class="o">))</span> <span class="o">{</span>
+		<span class="n">className</span> <span class="o">=</span> <span class="n">ele</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="n">CLASS_ATTRIBUTE</span><span class="o">).</span><span class="na">trim</span><span class="o">();</span>
+	<span class="o">}</span>
+
+	<span class="k">try</span> <span class="o">{</span>
+		<span class="n">String</span> <span class="n">parent</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+		<span class="c1">// 解析parent属性</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">ele</span><span class="o">.</span><span class="na">hasAttribute</span><span class="o">(</span><span class="n">PARENT_ATTRIBUTE</span><span class="o">))</span> <span class="o">{</span>
+			<span class="n">parent</span> <span class="o">=</span> <span class="n">ele</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="n">PARENT_ATTRIBUTE</span><span class="o">);</span>
+		<span class="o">}</span>
+		
+		<span class="c1">// 创建BeanDefinition</span>
+		<span class="n">AbstractBeanDefinition</span> <span class="n">bd</span> <span class="o">=</span> <span class="n">createBeanDefinition</span><span class="o">(</span><span class="n">className</span><span class="o">,</span> <span class="n">parent</span><span class="o">);</span>
+
+		<span class="c1">// 解析bean的其他属性</span>
+		<span class="n">parseBeanDefinitionAttributes</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">beanName</span><span class="o">,</span> <span class="n">containingBean</span><span class="o">,</span> <span class="n">bd</span><span class="o">);</span>
+		
+		<span class="c1">// bean的描述</span>
+		<span class="n">bd</span><span class="o">.</span><span class="na">setDescription</span><span class="o">(</span><span class="n">DomUtils</span><span class="o">.</span><span class="na">getChildElementValueByTagName</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">DESCRIPTION_ELEMENT</span><span class="o">));</span>
+		
+		<span class="n">parseMetaElements</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">bd</span><span class="o">);</span>
+		
+		<span class="c1">// override方法</span>
+		<span class="n">parseLookupOverrideSubElements</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">bd</span><span class="o">.</span><span class="na">getMethodOverrides</span><span class="o">());</span>
+		
+		<span class="c1">// replace方法</span>
+		<span class="n">parseReplacedMethodSubElements</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">bd</span><span class="o">.</span><span class="na">getMethodOverrides</span><span class="o">());</span>
+
+		<span class="c1">// 构造方法参数</span>
+		<span class="n">parseConstructorArgElements</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">bd</span><span class="o">);</span>
+		
+		<span class="c1">// setter注入的属性</span>
+		<span class="n">parsePropertyElements</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">bd</span><span class="o">);</span>
+		<span class="n">parseQualifierElements</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">bd</span><span class="o">);</span>
+
+		<span class="n">bd</span><span class="o">.</span><span class="na">setResource</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">readerContext</span><span class="o">.</span><span class="na">getResource</span><span class="o">());</span>
+		<span class="n">bd</span><span class="o">.</span><span class="na">setSource</span><span class="o">(</span><span class="n">extractSource</span><span class="o">(</span><span class="n">ele</span><span class="o">));</span>
+
+		<span class="k">return</span> <span class="n">bd</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">catch</span> <span class="o">(</span><span class="n">ClassNotFoundException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">error</span><span class="o">(</span><span class="s">"Bean class ["</span> <span class="o">+</span> <span class="n">className</span> <span class="o">+</span> <span class="s">"] not found"</span><span class="o">,</span> <span class="n">ele</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">catch</span> <span class="o">(</span><span class="n">NoClassDefFoundError</span> <span class="n">err</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">error</span><span class="o">(</span><span class="s">"Class that bean class ["</span> <span class="o">+</span> <span class="n">className</span> <span class="o">+</span> <span class="s">"] depends on not found"</span><span class="o">,</span> <span class="n">ele</span><span class="o">,</span> <span class="n">err</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">catch</span> <span class="o">(</span><span class="n">Throwable</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+		<span class="n">error</span><span class="o">(</span><span class="s">"Unexpected failure during bean definition parsing"</span><span class="o">,</span> <span class="n">ele</span><span class="o">,</span> <span class="n">ex</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">finally</span> <span class="o">{</span>
+		<span class="k">this</span><span class="o">.</span><span class="na">parseState</span><span class="o">.</span><span class="na">pop</span><span class="o">();</span>
+	<span class="o">}</span>
+
+	<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>可以看到，这段代码就是获取我们在xml定义的bean信息，转换成BeanDefinition对象。这个获取的BeanDefinition是AbstractBeanDefinition，那是哪个具体的BeanDefinition？在<a href="https://jylaxp.github.io/2017/11/23/spring-BeanDefinition.html">Spring 之 BeanDefinition</a> 中给出的GenericBeanDefinition，我们验证一下。</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">protected</span> <span class="n">AbstractBeanDefinition</span> <span class="nf">createBeanDefinition</span><span class="o">(</span><span class="n">String</span> <span class="n">className</span><span class="o">,</span> <span class="n">String</span> <span class="n">parentName</span><span class="o">)</span>
+		<span class="kd">throws</span> <span class="n">ClassNotFoundException</span> <span class="o">{</span>
+
+	<span class="k">return</span> <span class="n">BeanDefinitionReaderUtils</span><span class="o">.</span><span class="na">createBeanDefinition</span><span class="o">(</span>
+			<span class="n">parentName</span><span class="o">,</span> <span class="n">className</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">readerContext</span><span class="o">.</span><span class="na">getBeanClassLoader</span><span class="o">());</span>
+<span class="o">}</span>
+
+<span class="c1">// BeanDefinitionReaderUtils.createBeanDefinition</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="n">AbstractBeanDefinition</span> <span class="nf">createBeanDefinition</span><span class="o">(</span>
+		<span class="n">String</span> <span class="n">parentName</span><span class="o">,</span> <span class="n">String</span> <span class="n">className</span><span class="o">,</span> <span class="n">ClassLoader</span> <span class="n">classLoader</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ClassNotFoundException</span> <span class="o">{</span>
+
+	<span class="n">GenericBeanDefinition</span> <span class="n">bd</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GenericBeanDefinition</span><span class="o">();</span>
+	<span class="n">bd</span><span class="o">.</span><span class="na">setParentName</span><span class="o">(</span><span class="n">parentName</span><span class="o">);</span>
+	<span class="k">if</span> <span class="o">(</span><span class="n">className</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">classLoader</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">bd</span><span class="o">.</span><span class="na">setBeanClass</span><span class="o">(</span><span class="n">ClassUtils</span><span class="o">.</span><span class="na">forName</span><span class="o">(</span><span class="n">className</span><span class="o">,</span> <span class="n">classLoader</span><span class="o">));</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="o">{</span>
+			<span class="n">bd</span><span class="o">.</span><span class="na">setBeanClassName</span><span class="o">(</span><span class="n">className</span><span class="o">);</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	<span class="k">return</span> <span class="n">bd</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>解析xml标签和属性的过程很无聊的，无非就是调ele.getAttribute获取响应的属性的值，然后再调用bd.setXXX方法，给bd赋值，没什么可说的，标签解析完了，也就完成了bean从xml到BeanDefinition的转换了。不过，还有几点值得说说的。</p>
+
+<ul>
+  <li>解析<code class="highlighter-rouge">&lt;bean/&gt;</code>标签的属性。<strong>如果没有指定属性，则使用默认值。</strong>
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 解析bean的其他属性</span>
+<span class="n">parseBeanDefinitionAttributes</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">beanName</span><span class="o">,</span> <span class="n">containingBean</span><span class="o">,</span> <span class="n">bd</span><span class="o">);</span>
+</code></pre></div>    </div>
+  </li>
+  <li>解析构造方法的参数和setter方法的参数。</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 构造方法参数</span>
+<span class="n">parseConstructorArgElements</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">bd</span><span class="o">);</span>
+
+<span class="c1">// setter注入的属性</span>
+<span class="n">parsePropertyElements</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">bd</span><span class="o">);</span>
+</code></pre></div></div>
+<p>构造参数和setter方法的参数比较复杂:</p>
+<ol>
+  <li>基本类型</li>
+  <li>其他的bean</li>
+  <li>集合类型(Array, List, Set, Map )</li>
+  <li>Property
+针对这些类型的参数，做了不同的解析</li>
+</ol>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="n">Object</span> <span class="nf">parsePropertySubElement</span><span class="o">(</span><span class="n">Element</span> <span class="n">ele</span><span class="o">,</span> <span class="n">BeanDefinition</span> <span class="n">bd</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">return</span> <span class="nf">parsePropertySubElement</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">bd</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="cm">/**
+ * Parse a value, ref or collection sub-element of a property or
+ * constructor-arg element.
+ * @param ele subelement of property element; we don't know which yet
+ * @param defaultValueType the default type (class name) for any
+ * {@code &lt;value&gt;} tag that might be created
+ */</span>
+<span class="kd">public</span> <span class="n">Object</span> <span class="nf">parsePropertySubElement</span><span class="o">(</span><span class="n">Element</span> <span class="n">ele</span><span class="o">,</span> <span class="n">BeanDefinition</span> <span class="n">bd</span><span class="o">,</span> <span class="n">String</span> <span class="n">defaultValueType</span><span class="o">)</span> <span class="o">{</span>
+	<span class="k">if</span> <span class="o">(!</span><span class="n">isDefaultNamespace</span><span class="o">(</span><span class="n">ele</span><span class="o">))</span> <span class="o">{</span>
+		<span class="c1">// 子定义解析</span>
+		<span class="k">return</span> <span class="nf">parseNestedCustomElement</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">bd</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">nodeNameEquals</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">BEAN_ELEMENT</span><span class="o">))</span> <span class="o">{</span>
+		<span class="c1">// bean 节点，　递归解析</span>
+		<span class="n">BeanDefinitionHolder</span> <span class="n">nestedBd</span> <span class="o">=</span> <span class="n">parseBeanDefinitionElement</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">bd</span><span class="o">);</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">nestedBd</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">nestedBd</span> <span class="o">=</span> <span class="n">decorateBeanDefinitionIfRequired</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">nestedBd</span><span class="o">,</span> <span class="n">bd</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="n">nestedBd</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">nodeNameEquals</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">REF_ELEMENT</span><span class="o">))</span> <span class="o">{</span>
+		<span class="c1">// ref引用节点</span>
+		<span class="c1">// A generic reference to any name of any bean.</span>
+		<span class="n">String</span> <span class="n">refName</span> <span class="o">=</span> <span class="n">ele</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="n">BEAN_REF_ATTRIBUTE</span><span class="o">);</span>
+		<span class="kt">boolean</span> <span class="n">toParent</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+		<span class="k">if</span> <span class="o">(!</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasLength</span><span class="o">(</span><span class="n">refName</span><span class="o">))</span> <span class="o">{</span>
+			<span class="c1">// A reference to the id of another bean in the same XML file.</span>
+			<span class="n">refName</span> <span class="o">=</span> <span class="n">ele</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="n">LOCAL_REF_ATTRIBUTE</span><span class="o">);</span>
+			<span class="k">if</span> <span class="o">(!</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasLength</span><span class="o">(</span><span class="n">refName</span><span class="o">))</span> <span class="o">{</span>
+				<span class="c1">// A reference to the id of another bean in a parent context.</span>
+				<span class="n">refName</span> <span class="o">=</span> <span class="n">ele</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="n">PARENT_REF_ATTRIBUTE</span><span class="o">);</span>
+				<span class="n">toParent</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+				<span class="k">if</span> <span class="o">(!</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasLength</span><span class="o">(</span><span class="n">refName</span><span class="o">))</span> <span class="o">{</span>
+					<span class="n">error</span><span class="o">(</span><span class="s">"'bean', 'local' or 'parent' is required for &lt;ref&gt; element"</span><span class="o">,</span> <span class="n">ele</span><span class="o">);</span>
+					<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+				<span class="o">}</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		<span class="k">if</span> <span class="o">(!</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasText</span><span class="o">(</span><span class="n">refName</span><span class="o">))</span> <span class="o">{</span>
+			<span class="n">error</span><span class="o">(</span><span class="s">"&lt;ref&gt; element contains empty target attribute"</span><span class="o">,</span> <span class="n">ele</span><span class="o">);</span>
+			<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="n">RuntimeBeanReference</span> <span class="n">ref</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RuntimeBeanReference</span><span class="o">(</span><span class="n">refName</span><span class="o">,</span> <span class="n">toParent</span><span class="o">);</span>
+		<span class="n">ref</span><span class="o">.</span><span class="na">setSource</span><span class="o">(</span><span class="n">extractSource</span><span class="o">(</span><span class="n">ele</span><span class="o">));</span>
+		<span class="k">return</span> <span class="n">ref</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">nodeNameEquals</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">IDREF_ELEMENT</span><span class="o">))</span> <span class="o">{</span>
+		<span class="c1">// idref节点</span>
+		<span class="k">return</span> <span class="nf">parseIdRefElement</span><span class="o">(</span><span class="n">ele</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">nodeNameEquals</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">VALUE_ELEMENT</span><span class="o">))</span> <span class="o">{</span>
+		<span class="c1">// value节点</span>
+		<span class="k">return</span> <span class="nf">parseValueElement</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">defaultValueType</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">nodeNameEquals</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">NULL_ELEMENT</span><span class="o">))</span> <span class="o">{</span>
+		<span class="c1">// It's a distinguished null value. Let's wrap it in a TypedStringValue</span>
+		<span class="c1">// object in order to preserve the source location.</span>
+		<span class="n">TypedStringValue</span> <span class="n">nullHolder</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TypedStringValue</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
+		<span class="n">nullHolder</span><span class="o">.</span><span class="na">setSource</span><span class="o">(</span><span class="n">extractSource</span><span class="o">(</span><span class="n">ele</span><span class="o">));</span>
+		<span class="k">return</span> <span class="n">nullHolder</span><span class="o">;</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">nodeNameEquals</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">ARRAY_ELEMENT</span><span class="o">))</span> <span class="o">{</span>
+		<span class="c1">// Array节点</span>
+		<span class="k">return</span> <span class="nf">parseArrayElement</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">bd</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">nodeNameEquals</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">LIST_ELEMENT</span><span class="o">))</span> <span class="o">{</span>
+		<span class="c1">// List 节点</span>
+		<span class="k">return</span> <span class="nf">parseListElement</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">bd</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">nodeNameEquals</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">SET_ELEMENT</span><span class="o">))</span> <span class="o">{</span>
+		<span class="c1">// Set 节点</span>
+		<span class="k">return</span> <span class="nf">parseSetElement</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">bd</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">nodeNameEquals</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">MAP_ELEMENT</span><span class="o">))</span> <span class="o">{</span>
+		<span class="c1">// map 节点</span>
+		<span class="k">return</span> <span class="nf">parseMapElement</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">bd</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">nodeNameEquals</span><span class="o">(</span><span class="n">ele</span><span class="o">,</span> <span class="n">PROPS_ELEMENT</span><span class="o">))</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="nf">parsePropsElement</span><span class="o">(</span><span class="n">ele</span><span class="o">);</span>
+	<span class="o">}</span>
+	<span class="k">else</span> <span class="o">{</span>
+		<span class="n">error</span><span class="o">(</span><span class="s">"Unknown property sub-element: ["</span> <span class="o">+</span> <span class="n">ele</span><span class="o">.</span><span class="na">getNodeName</span><span class="o">()</span> <span class="o">+</span> <span class="s">"]"</span><span class="o">,</span> <span class="n">ele</span><span class="o">);</span>
+		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>Array, List, Set 节点代码逻辑一样，值看Array就可以了。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="n">Object</span> <span class="nf">parseArrayElement</span><span class="o">(</span><span class="n">Element</span> <span class="n">arrayEle</span><span class="o">,</span> <span class="n">BeanDefinition</span> <span class="n">bd</span><span class="o">)</span> <span class="o">{</span>
+	<span class="c1">// 获取元素的类型</span>
+	<span class="n">String</span> <span class="n">elementType</span> <span class="o">=</span> <span class="n">arrayEle</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="n">VALUE_TYPE_ATTRIBUTE</span><span class="o">);</span>
+	<span class="n">NodeList</span> <span class="n">nl</span> <span class="o">=</span> <span class="n">arrayEle</span><span class="o">.</span><span class="na">getChildNodes</span><span class="o">();</span>
+	<span class="n">ManagedArray</span> <span class="n">target</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ManagedArray</span><span class="o">(</span><span class="n">elementType</span><span class="o">,</span> <span class="n">nl</span><span class="o">.</span><span class="na">getLength</span><span class="o">());</span>
+	<span class="n">target</span><span class="o">.</span><span class="na">setSource</span><span class="o">(</span><span class="n">extractSource</span><span class="o">(</span><span class="n">arrayEle</span><span class="o">));</span>
+	<span class="n">target</span><span class="o">.</span><span class="na">setElementTypeName</span><span class="o">(</span><span class="n">elementType</span><span class="o">);</span>
+	<span class="n">target</span><span class="o">.</span><span class="na">setMergeEnabled</span><span class="o">(</span><span class="n">parseMergeAttribute</span><span class="o">(</span><span class="n">arrayEle</span><span class="o">));</span>
+	
+	<span class="c1">// 解析集合元素</span>
+	<span class="n">parseCollectionElements</span><span class="o">(</span><span class="n">nl</span><span class="o">,</span> <span class="n">target</span><span class="o">,</span> <span class="n">bd</span><span class="o">,</span> <span class="n">elementType</span><span class="o">);</span>
+	<span class="k">return</span> <span class="n">target</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">parseCollectionElements</span><span class="o">(</span>
+		<span class="n">NodeList</span> <span class="n">elementNodes</span><span class="o">,</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">target</span><span class="o">,</span> <span class="n">BeanDefinition</span> <span class="n">bd</span><span class="o">,</span> <span class="n">String</span> <span class="n">defaultElementType</span><span class="o">)</span> <span class="o">{</span>
+
+	<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">elementNodes</span><span class="o">.</span><span class="na">getLength</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+		<span class="n">Node</span> <span class="n">node</span> <span class="o">=</span> <span class="n">elementNodes</span><span class="o">.</span><span class="na">item</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">node</span> <span class="k">instanceof</span> <span class="n">Element</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">nodeNameEquals</span><span class="o">(</span><span class="n">node</span><span class="o">,</span> <span class="n">DESCRIPTION_ELEMENT</span><span class="o">))</span> <span class="o">{</span>
+			<span class="c1">// 递归调用parsePropertySubElement解析节点</span>
+			<span class="n">target</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">parsePropertySubElement</span><span class="o">((</span><span class="n">Element</span><span class="o">)</span> <span class="n">node</span><span class="o">,</span> <span class="n">bd</span><span class="o">,</span> <span class="n">defaultElementType</span><span class="o">));</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>Map解析的代码看着比较复杂</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="nf">parseMapElement</span><span class="o">(</span><span class="n">Element</span> <span class="n">mapEle</span><span class="o">,</span> <span class="n">BeanDefinition</span> <span class="n">bd</span><span class="o">)</span> <span class="o">{</span>
+	<span class="c1">// 获取key的默认类型，　map节点的属性</span>
+	<span class="n">String</span> <span class="n">defaultKeyType</span> <span class="o">=</span> <span class="n">mapEle</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="n">KEY_TYPE_ATTRIBUTE</span><span class="o">);</span>
+	
+	<span class="c1">// 获取value的默认类型，　map节点的属性</span>
+	<span class="n">String</span> <span class="n">defaultValueType</span> <span class="o">=</span> <span class="n">mapEle</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="n">VALUE_TYPE_ATTRIBUTE</span><span class="o">);</span>
+
+	<span class="c1">// 获取map节点的所有entry</span>
+	<span class="n">List</span><span class="o">&lt;</span><span class="n">Element</span><span class="o">&gt;</span> <span class="n">entryEles</span> <span class="o">=</span> <span class="n">DomUtils</span><span class="o">.</span><span class="na">getChildElementsByTagName</span><span class="o">(</span><span class="n">mapEle</span><span class="o">,</span> <span class="n">ENTRY_ELEMENT</span><span class="o">);</span>
+	<span class="n">ManagedMap</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ManagedMap</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;(</span><span class="n">entryEles</span><span class="o">.</span><span class="na">size</span><span class="o">());</span>
+	<span class="n">map</span><span class="o">.</span><span class="na">setSource</span><span class="o">(</span><span class="n">extractSource</span><span class="o">(</span><span class="n">mapEle</span><span class="o">));</span>
+	<span class="n">map</span><span class="o">.</span><span class="na">setKeyTypeName</span><span class="o">(</span><span class="n">defaultKeyType</span><span class="o">);</span>
+	<span class="n">map</span><span class="o">.</span><span class="na">setValueTypeName</span><span class="o">(</span><span class="n">defaultValueType</span><span class="o">);</span>
+	<span class="n">map</span><span class="o">.</span><span class="na">setMergeEnabled</span><span class="o">(</span><span class="n">parseMergeAttribute</span><span class="o">(</span><span class="n">mapEle</span><span class="o">));</span>
+
+	<span class="k">for</span> <span class="o">(</span><span class="n">Element</span> <span class="n">entryEle</span> <span class="o">:</span> <span class="n">entryEles</span><span class="o">)</span> <span class="o">{</span>
+		<span class="c1">// Should only have one value child element: ref, value, list, etc.</span>
+		<span class="c1">// Optionally, there might be a key child element.</span>
+		<span class="c1">// 检查entry节点的子节点的合法性，只能有一个key节点和一个value节点</span>
+		<span class="n">NodeList</span> <span class="n">entrySubNodes</span> <span class="o">=</span> <span class="n">entryEle</span><span class="o">.</span><span class="na">getChildNodes</span><span class="o">();</span>
+		<span class="n">Element</span> <span class="n">keyEle</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+		<span class="n">Element</span> <span class="n">valueEle</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+		<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">entrySubNodes</span><span class="o">.</span><span class="na">getLength</span><span class="o">();</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="n">Node</span> <span class="n">node</span> <span class="o">=</span> <span class="n">entrySubNodes</span><span class="o">.</span><span class="na">item</span><span class="o">(</span><span class="n">j</span><span class="o">);</span>
+			<span class="k">if</span> <span class="o">(</span><span class="n">node</span> <span class="k">instanceof</span> <span class="n">Element</span><span class="o">)</span> <span class="o">{</span>
+				<span class="n">Element</span> <span class="n">candidateEle</span> <span class="o">=</span> <span class="o">(</span><span class="n">Element</span><span class="o">)</span> <span class="n">node</span><span class="o">;</span>
+				<span class="k">if</span> <span class="o">(</span><span class="n">nodeNameEquals</span><span class="o">(</span><span class="n">candidateEle</span><span class="o">,</span> <span class="n">KEY_ELEMENT</span><span class="o">))</span> <span class="o">{</span>
+					<span class="k">if</span> <span class="o">(</span><span class="n">keyEle</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+						<span class="n">error</span><span class="o">(</span><span class="s">"&lt;entry&gt; element is only allowed to contain one &lt;key&gt; sub-element"</span><span class="o">,</span> <span class="n">entryEle</span><span class="o">);</span>
+					<span class="o">}</span>
+					<span class="k">else</span> <span class="o">{</span>
+						<span class="n">keyEle</span> <span class="o">=</span> <span class="n">candidateEle</span><span class="o">;</span>
+					<span class="o">}</span>
+				<span class="o">}</span>
+				<span class="k">else</span> <span class="o">{</span>
+					<span class="c1">// Child element is what we're looking for.</span>
+					<span class="k">if</span> <span class="o">(</span><span class="n">nodeNameEquals</span><span class="o">(</span><span class="n">candidateEle</span><span class="o">,</span> <span class="n">DESCRIPTION_ELEMENT</span><span class="o">))</span> <span class="o">{</span>
+						<span class="c1">// the element is a &lt;description&gt; -&gt; ignore it</span>
+					<span class="o">}</span>
+					<span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">valueEle</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+						<span class="n">error</span><span class="o">(</span><span class="s">"&lt;entry&gt; element must not contain more than one value sub-element"</span><span class="o">,</span> <span class="n">entryEle</span><span class="o">);</span>
+					<span class="o">}</span>
+					<span class="k">else</span> <span class="o">{</span>
+						<span class="n">valueEle</span> <span class="o">=</span> <span class="n">candidateEle</span><span class="o">;</span>
+					<span class="o">}</span>
+				<span class="o">}</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+
+		<span class="c1">// 解析出key, 　key属性，key-ref属性，　key节点不能同是存在</span>
+		<span class="c1">// Extract key from attribute or sub-element.</span>
+		<span class="n">Object</span> <span class="n">key</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+		<span class="kt">boolean</span> <span class="n">hasKeyAttribute</span> <span class="o">=</span> <span class="n">entryEle</span><span class="o">.</span><span class="na">hasAttribute</span><span class="o">(</span><span class="n">KEY_ATTRIBUTE</span><span class="o">);</span>
+		<span class="kt">boolean</span> <span class="n">hasKeyRefAttribute</span> <span class="o">=</span> <span class="n">entryEle</span><span class="o">.</span><span class="na">hasAttribute</span><span class="o">(</span><span class="n">KEY_REF_ATTRIBUTE</span><span class="o">);</span>
+		<span class="k">if</span> <span class="o">((</span><span class="n">hasKeyAttribute</span> <span class="o">&amp;&amp;</span> <span class="n">hasKeyRefAttribute</span><span class="o">)</span> <span class="o">||</span>
+				<span class="o">((</span><span class="n">hasKeyAttribute</span> <span class="o">||</span> <span class="n">hasKeyRefAttribute</span><span class="o">))</span> <span class="o">&amp;&amp;</span> <span class="n">keyEle</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">error</span><span class="o">(</span><span class="s">"&lt;entry&gt; element is only allowed to contain either "</span> <span class="o">+</span>
+					<span class="s">"a 'key' attribute OR a 'key-ref' attribute OR a &lt;key&gt; sub-element"</span><span class="o">,</span> <span class="n">entryEle</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">hasKeyAttribute</span><span class="o">)</span> <span class="o">{</span>
+			<span class="c1">// key属性</span>
+			<span class="n">key</span> <span class="o">=</span> <span class="n">buildTypedStringValueForMap</span><span class="o">(</span><span class="n">entryEle</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="n">KEY_ATTRIBUTE</span><span class="o">),</span> <span class="n">defaultKeyType</span><span class="o">,</span> <span class="n">entryEle</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">hasKeyRefAttribute</span><span class="o">)</span> <span class="o">{</span>
+			<span class="c1">// key-ref属性</span>
+			<span class="n">String</span> <span class="n">refName</span> <span class="o">=</span> <span class="n">entryEle</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="n">KEY_REF_ATTRIBUTE</span><span class="o">);</span>
+			<span class="k">if</span> <span class="o">(!</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasText</span><span class="o">(</span><span class="n">refName</span><span class="o">))</span> <span class="o">{</span>
+				<span class="n">error</span><span class="o">(</span><span class="s">"&lt;entry&gt; element contains empty 'key-ref' attribute"</span><span class="o">,</span> <span class="n">entryEle</span><span class="o">);</span>
+			<span class="o">}</span>
+			<span class="n">RuntimeBeanReference</span> <span class="n">ref</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RuntimeBeanReference</span><span class="o">(</span><span class="n">refName</span><span class="o">);</span>
+			<span class="n">ref</span><span class="o">.</span><span class="na">setSource</span><span class="o">(</span><span class="n">extractSource</span><span class="o">(</span><span class="n">entryEle</span><span class="o">));</span>
+			<span class="n">key</span> <span class="o">=</span> <span class="n">ref</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">keyEle</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+			<span class="c1">// key节点</span>
+			<span class="n">key</span> <span class="o">=</span> <span class="n">parseKeyElement</span><span class="o">(</span><span class="n">keyEle</span><span class="o">,</span> <span class="n">bd</span><span class="o">,</span> <span class="n">defaultKeyType</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="o">{</span>
+			<span class="n">error</span><span class="o">(</span><span class="s">"&lt;entry&gt; element must specify a key"</span><span class="o">,</span> <span class="n">entryEle</span><span class="o">);</span>
+		<span class="o">}</span>
+
+		<span class="c1">// 解析出value，　value属性，　value-ref属性，　value节点　不能同时存在</span>
+		<span class="c1">// Extract value from attribute or sub-element.</span>
+		<span class="n">Object</span> <span class="n">value</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+		<span class="kt">boolean</span> <span class="n">hasValueAttribute</span> <span class="o">=</span> <span class="n">entryEle</span><span class="o">.</span><span class="na">hasAttribute</span><span class="o">(</span><span class="n">VALUE_ATTRIBUTE</span><span class="o">);</span>
+		<span class="kt">boolean</span> <span class="n">hasValueRefAttribute</span> <span class="o">=</span> <span class="n">entryEle</span><span class="o">.</span><span class="na">hasAttribute</span><span class="o">(</span><span class="n">VALUE_REF_ATTRIBUTE</span><span class="o">);</span>
+		<span class="kt">boolean</span> <span class="n">hasValueTypeAttribute</span> <span class="o">=</span> <span class="n">entryEle</span><span class="o">.</span><span class="na">hasAttribute</span><span class="o">(</span><span class="n">VALUE_TYPE_ATTRIBUTE</span><span class="o">);</span>
+		<span class="k">if</span> <span class="o">((</span><span class="n">hasValueAttribute</span> <span class="o">&amp;&amp;</span> <span class="n">hasValueRefAttribute</span><span class="o">)</span> <span class="o">||</span>
+				<span class="o">((</span><span class="n">hasValueAttribute</span> <span class="o">||</span> <span class="n">hasValueRefAttribute</span><span class="o">))</span> <span class="o">&amp;&amp;</span> <span class="n">valueEle</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">error</span><span class="o">(</span><span class="s">"&lt;entry&gt; element is only allowed to contain either "</span> <span class="o">+</span>
+					<span class="s">"'value' attribute OR 'value-ref' attribute OR &lt;value&gt; sub-element"</span><span class="o">,</span> <span class="n">entryEle</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">if</span> <span class="o">((</span><span class="n">hasValueTypeAttribute</span> <span class="o">&amp;&amp;</span> <span class="n">hasValueRefAttribute</span><span class="o">)</span> <span class="o">||</span>
+			<span class="o">(</span><span class="n">hasValueTypeAttribute</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">hasValueAttribute</span><span class="o">)</span> <span class="o">||</span>
+				<span class="o">(</span><span class="n">hasValueTypeAttribute</span> <span class="o">&amp;&amp;</span> <span class="n">valueEle</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">))</span> <span class="o">{</span>
+			<span class="n">error</span><span class="o">(</span><span class="s">"&lt;entry&gt; element is only allowed to contain a 'value-type' "</span> <span class="o">+</span>
+					<span class="s">"attribute when it has a 'value' attribute"</span><span class="o">,</span> <span class="n">entryEle</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">if</span> <span class="o">(</span><span class="n">hasValueAttribute</span><span class="o">)</span> <span class="o">{</span>
+			<span class="c1">// value 属性</span>
+			<span class="n">String</span> <span class="n">valueType</span> <span class="o">=</span> <span class="n">entryEle</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="n">VALUE_TYPE_ATTRIBUTE</span><span class="o">);</span>
+			<span class="k">if</span> <span class="o">(!</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasText</span><span class="o">(</span><span class="n">valueType</span><span class="o">))</span> <span class="o">{</span>
+				<span class="n">valueType</span> <span class="o">=</span> <span class="n">defaultValueType</span><span class="o">;</span>
+			<span class="o">}</span>
+			<span class="n">value</span> <span class="o">=</span> <span class="n">buildTypedStringValueForMap</span><span class="o">(</span><span class="n">entryEle</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="n">VALUE_ATTRIBUTE</span><span class="o">),</span> <span class="n">valueType</span><span class="o">,</span> <span class="n">entryEle</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">hasValueRefAttribute</span><span class="o">)</span> <span class="o">{</span>
+			<span class="c1">// value-ref属性</span>
+			<span class="n">String</span> <span class="n">refName</span> <span class="o">=</span> <span class="n">entryEle</span><span class="o">.</span><span class="na">getAttribute</span><span class="o">(</span><span class="n">VALUE_REF_ATTRIBUTE</span><span class="o">);</span>
+			<span class="k">if</span> <span class="o">(!</span><span class="n">StringUtils</span><span class="o">.</span><span class="na">hasText</span><span class="o">(</span><span class="n">refName</span><span class="o">))</span> <span class="o">{</span>
+				<span class="n">error</span><span class="o">(</span><span class="s">"&lt;entry&gt; element contains empty 'value-ref' attribute"</span><span class="o">,</span> <span class="n">entryEle</span><span class="o">);</span>
+			<span class="o">}</span>
+			<span class="n">RuntimeBeanReference</span> <span class="n">ref</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RuntimeBeanReference</span><span class="o">(</span><span class="n">refName</span><span class="o">);</span>
+			<span class="n">ref</span><span class="o">.</span><span class="na">setSource</span><span class="o">(</span><span class="n">extractSource</span><span class="o">(</span><span class="n">entryEle</span><span class="o">));</span>
+			<span class="n">value</span> <span class="o">=</span> <span class="n">ref</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="nf">if</span> <span class="o">(</span><span class="n">valueEle</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+			<span class="c1">// value节点</span>
+			<span class="n">value</span> <span class="o">=</span> <span class="n">parsePropertySubElement</span><span class="o">(</span><span class="n">valueEle</span><span class="o">,</span> <span class="n">bd</span><span class="o">,</span> <span class="n">defaultValueType</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="k">else</span> <span class="o">{</span>
+			<span class="n">error</span><span class="o">(</span><span class="s">"&lt;entry&gt; element must specify a value"</span><span class="o">,</span> <span class="n">entryEle</span><span class="o">);</span>
+		<span class="o">}</span>
+
+		<span class="c1">// Add final key and value to the Map.</span>
+		<span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
+	<span class="o">}</span>
+
+	<span class="k">return</span> <span class="n">map</span><span class="o">;</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>代码看似复杂，其实就是key和value定义三种情况，key和value可以是entry节点的属性，ref属性或子节点，分这三种情况进行解析的，上例子：</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">"java.util.HashMap"</span><span class="nt">&gt;</span>
+	<span class="nt">&lt;constructor-arg&gt;</span>
+	    <span class="nt">&lt;map</span> <span class="na">key-type=</span><span class="s">"java.lang.Object"</span> <span class="na">value-type=</span><span class="s">"java.lang.Object"</span><span class="nt">&gt;</span>
+		<span class="nt">&lt;entry</span> <span class="na">key=</span><span class="s">"k1"</span> <span class="na">value=</span><span class="s">"v1"</span><span class="nt">/&gt;</span>
+		<span class="nt">&lt;entry</span> <span class="na">key-ref=</span><span class="s">"car"</span> <span class="na">value=</span><span class="s">"v1"</span><span class="nt">/&gt;</span>
+		<span class="nt">&lt;entry</span> <span class="na">key=</span><span class="s">"v3"</span> <span class="na">value-ref=</span><span class="s">"car"</span><span class="nt">/&gt;</span>
+		<span class="nt">&lt;entry&gt;</span>
+		    <span class="nt">&lt;key&gt;</span>
+		        <span class="nt">&lt;value&gt;</span>k2<span class="nt">&lt;/value&gt;</span>
+		    <span class="nt">&lt;/key&gt;</span>
+		    <span class="nt">&lt;value&gt;</span>v2<span class="nt">&lt;/value&gt;</span>
+		<span class="nt">&lt;/entry&gt;</span>
+		<span class="nt">&lt;entry&gt;</span>
+		    <span class="nt">&lt;key&gt;</span>
+		        <span class="nt">&lt;value&gt;</span>k3<span class="nt">&lt;/value&gt;</span>
+		    <span class="nt">&lt;/key&gt;</span>
+		    <span class="nt">&lt;ref</span> <span class="na">bean=</span><span class="s">"car"</span><span class="nt">/&gt;</span>
+		<span class="nt">&lt;/entry&gt;</span>
+	    <span class="nt">&lt;/map&gt;</span>
+	<span class="nt">&lt;/constructor-arg&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+</code></pre></div></div>
+<p>把这个例子带入解析代码看的话逻辑就很清晰了。
+至此，基于xml配置，并且没有扩展标签的bean解析、注册分析完了。</p>
 
   </div>
 

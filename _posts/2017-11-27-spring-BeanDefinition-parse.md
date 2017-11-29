@@ -158,7 +158,7 @@ protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throw
 // Create a new XmlBeanDefinitionReader for the given BeanFactory.
 XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
 ```
-首先，创建了一个XmlBeanDefinitionReader，看名字就只可以知道，这个XmlBeanDefinitionReader要干的事情就是就是从xml读取BeanDefinition。XmlBeanDefinitionReader的构造方法的参数这里参入的beanFactory，我们臆测，XmlBeanDefinitionReader读取的BeanDefinition就是注册到这个beanFacctory容器里的。看一下XmlBeanDefinitionReader的构方法，参数类型是BeanDefinitionRegistr，这个是一个接口，提供BeanDefinition注册功能，可以看一下DefaultListableBeanFactory类的关系，可以看到DefaultListableBeanFactory实现了BeanDefinitionRegistry接口。
+首先，创建了一个XmlBeanDefinitionReader，看名字就只可以知道，这个XmlBeanDefinitionReader要干的事情就是就是从xml读取BeanDefinition。XmlBeanDefinitionReader的构造方法的参数这里参入的beanFactory，我们臆测，XmlBeanDefinitionReader读取的BeanDefinition就是注册到这个beanFacctory容器里的。看一下XmlBeanDefinitionReader的构方法，参数类型是BeanDefinitionRegistr，这个是一个接口，提供BeanDefinition注册功能，可以看一下DefaultListableBeanFactory类的关系，可以看到DefaultListableBeanFactory实现了BeanDefinitionRegistry接口，DefaultListableBeanFactory本身也是一个Registry。
 ```java
 /**
  * Create new XmlBeanDefinitionReader for the given bean factory.
@@ -442,7 +442,17 @@ protected void doRegisterBeanDefinitions(Element root) {
 	this.delegate = parent;
 }
 ```
-上面那堆注释是来解析第一行代码和最后一行代码的，解释为什么要这样做。这里解释一下，这是什么场景。该方法可以看做是对```<beans/>```节点的解析,如果```<beans/>```节点嵌套了```<beans/>```节点，则该方法会递归调用，但是每个```<beans/>```节点都有它自己的默认值，默认值的解析和暂存都是在BeanDefinitionParserDelegate这个委托中的，也就是说这个委托关联了```<beans/>```的默认值，当```<beans/>```发生嵌套，递归调用此方法，如果不是重新创建一个委托，而是使用原来的委托，则会改变该委托暂存的默认值，导致解析错误。
+上面那堆注释是来解析第一行代码和最后一行代码的，解释为什么要这样做。这里解释一下，这是什么场景。该方法可以看做是对```<beans/>```节点的解析,如果```<beans/>```节点嵌套了```<beans/>```节点，则该方法会递归调用，但是每个```<beans/>```节点都有它自己的默认值，默认值的解析和暂存都是在BeanDefinitionParserDelegate这个委托中的，也就是说这个委托关联了```<beans/>```的默认值，当```<beans/>```发生嵌套，递归调用此方法，如果不是重新创建一个委托，而是使用原来的委托，则会改变该委托暂存的默认值，导致解析错误。看一下```createDelegate(getReaderContext(), root, parent)```的代码
+```java
+protected BeanDefinitionParserDelegate createDelegate(
+		XmlReaderContext readerContext, Element root, BeanDefinitionParserDelegate parentDelegate) {
+
+	BeanDefinitionParserDelegate delegate = new BeanDefinitionParserDelegate(readerContext);
+	delegate.initDefaults(root, parentDelegate);
+	return delegate;
+}
+```
+可以看到，这个创建了一个新的BeanDefinitionParserDelegate对象，并调用它的```initDefaults```方法初始化了默认值。
 ```java
 if (this.delegate.isDefaultNamespace(root)) {
 	String profileSpec = root.getAttribute(PROFILE_ATTRIBUTE);
@@ -460,18 +470,570 @@ if (this.delegate.isDefaultNamespace(root)) {
 }
 ```
 这个是和profile有关，暂不研究。
+```java
+preProcessXml(root);
+parseBeanDefinitions(root, this.delegate);
+postProcessXml(root);
+```
+preProcessXml(root)和postProcessXml(root)都是空实现，留给子类扩展，parseBeanDefinitions(root, this.delegate)才是我们翻山越岭要找的真相。
+```java
+protected void parseBeanDefinitions(Element root, BeanDefinitionParserDelegate delegate) {
+	if (delegate.isDefaultNamespace(root)) {
+		NodeList nl = root.getChildNodes();
+		for (int i = 0; i < nl.getLength(); i++) {
+			Node node = nl.item(i);
+			if (node instanceof Element) {
+				Element ele = (Element) node;
+				if (delegate.isDefaultNamespace(ele)) {
+					parseDefaultElement(ele, delegate);
+				}
+				else {
+					delegate.parseCustomElement(ele);
+				}
+			}
+		}
+	}
+	else {
+		delegate.parseCustomElement(root);
+	}
+}
+```
+先判断root节点是否是默认的命名空间```http://www.springframework.org/schema/beans```，如果是，这个按照默认提供的解析逻辑解析该节点，否则是通过spring schemas提供了扩展，则按照扩展的标签的逻辑解析，注解定义的bean也是通过这种方式提供的解析处理逻辑，后面分析注解定义的bean扫描和自定扩展标签的时候就从这个地方入手，前面的逻辑就不重复了。 我们先分析默认元素的解析。
+```java
+private void parseDefaultElement(Element ele, BeanDefinitionParserDelegate delegate) {
+	if (delegate.nodeNameEquals(ele, IMPORT_ELEMENT)) {
+		importBeanDefinitionResource(ele);
+	}
+	else if (delegate.nodeNameEquals(ele, ALIAS_ELEMENT)) {
+		processAliasRegistration(ele);
+	}
+	else if (delegate.nodeNameEquals(ele, BEAN_ELEMENT)) {
+		processBeanDefinition(ele, delegate);
+	}
+	else if (delegate.nodeNameEquals(ele, NESTED_BEANS_ELEMENT)) {
+		// recurse
+		doRegisterBeanDefinitions(ele);
+	}
+}
+```
+这里处理了４种情况:
 
+- 处理```<import/>```标签。```<import/>```是导入另外一个spring配置文件，处理逻辑和上面资源定位，读取配置文件，然后解析出BeanDefinition逻辑一样。
+- 处理```<alias/>```标签。解析别名，这个逻辑比较简单，只要在registry中注册别名和beanName的对应关系即可。
+- 处理```<bean/>```标签。这个就是解析BeanDefinition了，我们分析的重点。
+- 处理```<beans/>```标签。处理嵌套的处理```<bean/>```标签，可以看到这里递归调用了doRegisterBeanDefinitions方法。
+```java
+protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate) {
+	BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
+	if (bdHolder != null) {
+		bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);
+		try {
+			// Register the final decorated instance.
+			BeanDefinitionReaderUtils.registerBeanDefinition(bdHolder, getReaderContext().getRegistry());
+		}
+		catch (BeanDefinitionStoreException ex) {
+			getReaderContext().error("Failed to register bean definition with name '" +
+					bdHolder.getBeanName() + "'", ele, ex);
+		}
+		// Send registration event.
+		getReaderContext().fireComponentRegistered(new BeanComponentDefinition(bdHolder));
+	}
+}
+```
+processBeanDefinition主要完成了三件事情： 
 
+- 使用BeanDefinitionParserDelegate解析出BeanDefinition，但这里返回处理的是BeanDefinitionHolder，为什么是BeanDefinitionHolder，看一下这个类属性，不做解释了。
+```java
+public class BeanDefinitionHolder implements BeanMetadataElement {
 
+	private final BeanDefinition beanDefinition;
 
+	private final String beanName;
 
+	private final String[] aliases;
+}
+```
+- 装饰解析出来的BeanDefinitionHolder，其实就是装饰BeanDefinition。
+- 向registry注册BeanDefinition。
+我们来看```bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);```这里做了什么。看代码里加的注释吧，不想啰嗦了。
 
+```java
+/**
+ * Parses the supplied {@code <bean>} element. May return {@code null}
+ * if there were errors during parse. Errors are reported to the
+ * {@link org.springframework.beans.factory.parsing.ProblemReporter}.
+ */
+public BeanDefinitionHolder parseBeanDefinitionElement(Element ele) {
+	return parseBeanDefinitionElement(ele, null);
+}
 
+/**
+ * Parses the supplied {@code <bean>} element. May return {@code null}
+ * if there were errors during parse. Errors are reported to the
+ * {@link org.springframework.beans.factory.parsing.ProblemReporter}.
+ */
+public BeanDefinitionHolder parseBeanDefinitionElement(Element ele, BeanDefinition containingBean) {
+	// 获取<bean/>标签的id属性(beanName)
+	String id = ele.getAttribute(ID_ATTRIBUTE);
+	
+	// 获取<bean/>标签的name属性(别名)
+	String nameAttr = ele.getAttribute(NAME_ATTRIBUTE);
 
+	List<String> aliases = new ArrayList<String>();
+	if (StringUtils.hasLength(nameAttr)) {
+		// 别名拆分
+		String[] nameArr = StringUtils.tokenizeToStringArray(nameAttr, MULTI_VALUE_ATTRIBUTE_DELIMITERS);
+		aliases.addAll(Arrays.asList(nameArr));
+	}
 
+	String beanName = id;
+	if (!StringUtils.hasText(beanName) && !aliases.isEmpty()) {
+		// 如果没有配置beanNam，但是配置了别名，取第一个别名作为beanName
+		beanName = aliases.remove(0);
+		if (logger.isDebugEnabled()) {
+			logger.debug("No XML 'id' specified - using '" + beanName +
+					"' as bean name and " + aliases + " as aliases");
+		}
+	}
 
+	if (containingBean == null) {
+		// 检查beanName和别名的唯一性。
+		// 这里的唯一性是在同一容器中唯一而不是一个应用中唯一，在不同的容器中可以重复，比如有父子关系的两个容器，可以有相同beanName和别名的bean
+		checkNameUniqueness(beanName, aliases, ele);
+	}
 
+	// 解析beanDefinition
+	AbstractBeanDefinition beanDefinition = parseBeanDefinitionElement(ele, beanName, containingBean);
+	if (beanDefinition != null) {
+		// 如果还是没有beanName，则自动生成beanName
+		if (!StringUtils.hasText(beanName)) {
+			try {
+				if (containingBean != null) {
+					beanName = BeanDefinitionReaderUtils.generateBeanName(
+							beanDefinition, this.readerContext.getRegistry(), true);
+				}
+				else {
+					beanName = this.readerContext.generateBeanName(beanDefinition);
+					// Register an alias for the plain bean class name, if still possible,
+					// if the generator returned the class name plus a suffix.
+					// This is expected for Spring 1.2/2.0 backwards compatibility.
+					String beanClassName = beanDefinition.getBeanClassName();
+					if (beanClassName != null &&
+							beanName.startsWith(beanClassName) && beanName.length() > beanClassName.length() &&
+							!this.readerContext.getRegistry().isBeanNameInUse(beanClassName)) {
+						aliases.add(beanClassName);
+					}
+				}
+				if (logger.isDebugEnabled()) {
+					logger.debug("Neither XML 'id' nor 'name' specified - " +
+							"using generated bean name [" + beanName + "]");
+				}
+			}
+			catch (Exception ex) {
+				error(ex.getMessage(), ele);
+				return null;
+			}
+		}
+		String[] aliasesArray = StringUtils.toStringArray(aliases);
+		return new BeanDefinitionHolder(beanDefinition, beanName, aliasesArray);
+	}
 
+	return null;
+}
+```
+接着看beanDefinition解析parseBeanDefinitionElement
+```java
+public AbstractBeanDefinition parseBeanDefinitionElement(
+		Element ele, String beanName, BeanDefinition containingBean) {
 
+	this.parseState.push(new BeanEntry(beanName));
 
+	String className = null;
+	// 解析class属性
+	if (ele.hasAttribute(CLASS_ATTRIBUTE)) {
+		className = ele.getAttribute(CLASS_ATTRIBUTE).trim();
+	}
 
+	try {
+		String parent = null;
+		// 解析parent属性
+		if (ele.hasAttribute(PARENT_ATTRIBUTE)) {
+			parent = ele.getAttribute(PARENT_ATTRIBUTE);
+		}
+		
+		// 创建BeanDefinition
+		AbstractBeanDefinition bd = createBeanDefinition(className, parent);
+
+		// 解析bean的其他属性
+		parseBeanDefinitionAttributes(ele, beanName, containingBean, bd);
+		
+		// bean的描述
+		bd.setDescription(DomUtils.getChildElementValueByTagName(ele, DESCRIPTION_ELEMENT));
+		
+		parseMetaElements(ele, bd);
+		
+		// override方法
+		parseLookupOverrideSubElements(ele, bd.getMethodOverrides());
+		
+		// replace方法
+		parseReplacedMethodSubElements(ele, bd.getMethodOverrides());
+
+		// 构造方法参数
+		parseConstructorArgElements(ele, bd);
+		
+		// setter注入的属性
+		parsePropertyElements(ele, bd);
+		parseQualifierElements(ele, bd);
+
+		bd.setResource(this.readerContext.getResource());
+		bd.setSource(extractSource(ele));
+
+		return bd;
+	}
+	catch (ClassNotFoundException ex) {
+		error("Bean class [" + className + "] not found", ele, ex);
+	}
+	catch (NoClassDefFoundError err) {
+		error("Class that bean class [" + className + "] depends on not found", ele, err);
+	}
+	catch (Throwable ex) {
+		error("Unexpected failure during bean definition parsing", ele, ex);
+	}
+	finally {
+		this.parseState.pop();
+	}
+
+	return null;
+}
+```
+可以看到，这段代码就是获取我们在xml定义的bean信息，转换成BeanDefinition对象。这个获取的BeanDefinition是AbstractBeanDefinition，那是哪个具体的BeanDefinition？在[Spring 之 BeanDefinition](https://jylaxp.github.io/2017/11/23/spring-BeanDefinition.html) 中给出的GenericBeanDefinition，我们验证一下。
+```java
+protected AbstractBeanDefinition createBeanDefinition(String className, String parentName)
+		throws ClassNotFoundException {
+
+	return BeanDefinitionReaderUtils.createBeanDefinition(
+			parentName, className, this.readerContext.getBeanClassLoader());
+}
+
+// BeanDefinitionReaderUtils.createBeanDefinition
+public static AbstractBeanDefinition createBeanDefinition(
+		String parentName, String className, ClassLoader classLoader) throws ClassNotFoundException {
+
+	GenericBeanDefinition bd = new GenericBeanDefinition();
+	bd.setParentName(parentName);
+	if (className != null) {
+		if (classLoader != null) {
+			bd.setBeanClass(ClassUtils.forName(className, classLoader));
+		}
+		else {
+			bd.setBeanClassName(className);
+		}
+	}
+	return bd;
+}
+```
+
+解析xml标签和属性的过程很无聊的，无非就是调ele.getAttribute获取响应的属性的值，然后再调用bd.setXXX方法，给bd赋值，没什么可说的，标签解析完了，也就完成了bean从xml到BeanDefinition的转换了。不过，还有几点值得说说的。
+
+- 解析```<bean/>```标签的属性。**如果没有指定属性，则使用默认值。**
+```java
+// 解析bean的其他属性
+parseBeanDefinitionAttributes(ele, beanName, containingBean, bd);
+```
+
+- 解析构造方法的参数和setter方法的参数。
+
+```java
+// 构造方法参数
+parseConstructorArgElements(ele, bd);
+
+// setter注入的属性
+parsePropertyElements(ele, bd);
+```
+构造参数和setter方法的参数比较复杂:
+1. 基本类型
+2. 其他的bean
+3. 集合类型(Array, List, Set, Map )
+4. Property
+针对这些类型的参数，做了不同的解析
+
+```java
+public Object parsePropertySubElement(Element ele, BeanDefinition bd) {
+	return parsePropertySubElement(ele, bd, null);
+}
+
+/**
+ * Parse a value, ref or collection sub-element of a property or
+ * constructor-arg element.
+ * @param ele subelement of property element; we don't know which yet
+ * @param defaultValueType the default type (class name) for any
+ * {@code <value>} tag that might be created
+ */
+public Object parsePropertySubElement(Element ele, BeanDefinition bd, String defaultValueType) {
+	if (!isDefaultNamespace(ele)) {
+		// 子定义解析
+		return parseNestedCustomElement(ele, bd);
+	}
+	else if (nodeNameEquals(ele, BEAN_ELEMENT)) {
+		// bean 节点，　递归解析
+		BeanDefinitionHolder nestedBd = parseBeanDefinitionElement(ele, bd);
+		if (nestedBd != null) {
+			nestedBd = decorateBeanDefinitionIfRequired(ele, nestedBd, bd);
+		}
+		return nestedBd;
+	}
+	else if (nodeNameEquals(ele, REF_ELEMENT)) {
+		// ref引用节点
+		// A generic reference to any name of any bean.
+		String refName = ele.getAttribute(BEAN_REF_ATTRIBUTE);
+		boolean toParent = false;
+		if (!StringUtils.hasLength(refName)) {
+			// A reference to the id of another bean in the same XML file.
+			refName = ele.getAttribute(LOCAL_REF_ATTRIBUTE);
+			if (!StringUtils.hasLength(refName)) {
+				// A reference to the id of another bean in a parent context.
+				refName = ele.getAttribute(PARENT_REF_ATTRIBUTE);
+				toParent = true;
+				if (!StringUtils.hasLength(refName)) {
+					error("'bean', 'local' or 'parent' is required for <ref> element", ele);
+					return null;
+				}
+			}
+		}
+		if (!StringUtils.hasText(refName)) {
+			error("<ref> element contains empty target attribute", ele);
+			return null;
+		}
+		RuntimeBeanReference ref = new RuntimeBeanReference(refName, toParent);
+		ref.setSource(extractSource(ele));
+		return ref;
+	}
+	else if (nodeNameEquals(ele, IDREF_ELEMENT)) {
+		// idref节点
+		return parseIdRefElement(ele);
+	}
+	else if (nodeNameEquals(ele, VALUE_ELEMENT)) {
+		// value节点
+		return parseValueElement(ele, defaultValueType);
+	}
+	else if (nodeNameEquals(ele, NULL_ELEMENT)) {
+		// It's a distinguished null value. Let's wrap it in a TypedStringValue
+		// object in order to preserve the source location.
+		TypedStringValue nullHolder = new TypedStringValue(null);
+		nullHolder.setSource(extractSource(ele));
+		return nullHolder;
+	}
+	else if (nodeNameEquals(ele, ARRAY_ELEMENT)) {
+		// Array节点
+		return parseArrayElement(ele, bd);
+	}
+	else if (nodeNameEquals(ele, LIST_ELEMENT)) {
+		// List 节点
+		return parseListElement(ele, bd);
+	}
+	else if (nodeNameEquals(ele, SET_ELEMENT)) {
+		// Set 节点
+		return parseSetElement(ele, bd);
+	}
+	else if (nodeNameEquals(ele, MAP_ELEMENT)) {
+		// map 节点
+		return parseMapElement(ele, bd);
+	}
+	else if (nodeNameEquals(ele, PROPS_ELEMENT)) {
+		return parsePropsElement(ele);
+	}
+	else {
+		error("Unknown property sub-element: [" + ele.getNodeName() + "]", ele);
+		return null;
+	}
+}
+```
+Array, List, Set 节点代码逻辑一样，值看Array就可以了。
+
+```java
+public Object parseArrayElement(Element arrayEle, BeanDefinition bd) {
+	// 获取元素的类型
+	String elementType = arrayEle.getAttribute(VALUE_TYPE_ATTRIBUTE);
+	NodeList nl = arrayEle.getChildNodes();
+	ManagedArray target = new ManagedArray(elementType, nl.getLength());
+	target.setSource(extractSource(arrayEle));
+	target.setElementTypeName(elementType);
+	target.setMergeEnabled(parseMergeAttribute(arrayEle));
+	
+	// 解析集合元素
+	parseCollectionElements(nl, target, bd, elementType);
+	return target;
+}
+
+protected void parseCollectionElements(
+		NodeList elementNodes, Collection<Object> target, BeanDefinition bd, String defaultElementType) {
+
+	for (int i = 0; i < elementNodes.getLength(); i++) {
+		Node node = elementNodes.item(i);
+		if (node instanceof Element && !nodeNameEquals(node, DESCRIPTION_ELEMENT)) {
+			// 递归调用parsePropertySubElement解析节点
+			target.add(parsePropertySubElement((Element) node, bd, defaultElementType));
+		}
+	}
+}
+```
+Map解析的代码看着比较复杂
+```java
+public Map<Object, Object> parseMapElement(Element mapEle, BeanDefinition bd) {
+	// 获取key的默认类型，　map节点的属性
+	String defaultKeyType = mapEle.getAttribute(KEY_TYPE_ATTRIBUTE);
+	
+	// 获取value的默认类型，　map节点的属性
+	String defaultValueType = mapEle.getAttribute(VALUE_TYPE_ATTRIBUTE);
+
+	// 获取map节点的所有entry
+	List<Element> entryEles = DomUtils.getChildElementsByTagName(mapEle, ENTRY_ELEMENT);
+	ManagedMap<Object, Object> map = new ManagedMap<Object, Object>(entryEles.size());
+	map.setSource(extractSource(mapEle));
+	map.setKeyTypeName(defaultKeyType);
+	map.setValueTypeName(defaultValueType);
+	map.setMergeEnabled(parseMergeAttribute(mapEle));
+
+	for (Element entryEle : entryEles) {
+		// Should only have one value child element: ref, value, list, etc.
+		// Optionally, there might be a key child element.
+		// 检查entry节点的子节点的合法性，只能有一个key节点和一个value节点
+		NodeList entrySubNodes = entryEle.getChildNodes();
+		Element keyEle = null;
+		Element valueEle = null;
+		for (int j = 0; j < entrySubNodes.getLength(); j++) {
+			Node node = entrySubNodes.item(j);
+			if (node instanceof Element) {
+				Element candidateEle = (Element) node;
+				if (nodeNameEquals(candidateEle, KEY_ELEMENT)) {
+					if (keyEle != null) {
+						error("<entry> element is only allowed to contain one <key> sub-element", entryEle);
+					}
+					else {
+						keyEle = candidateEle;
+					}
+				}
+				else {
+					// Child element is what we're looking for.
+					if (nodeNameEquals(candidateEle, DESCRIPTION_ELEMENT)) {
+						// the element is a <description> -> ignore it
+					}
+					else if (valueEle != null) {
+						error("<entry> element must not contain more than one value sub-element", entryEle);
+					}
+					else {
+						valueEle = candidateEle;
+					}
+				}
+			}
+		}
+
+		// 解析出key, 　key属性，key-ref属性，　key节点不能同是存在
+		// Extract key from attribute or sub-element.
+		Object key = null;
+		boolean hasKeyAttribute = entryEle.hasAttribute(KEY_ATTRIBUTE);
+		boolean hasKeyRefAttribute = entryEle.hasAttribute(KEY_REF_ATTRIBUTE);
+		if ((hasKeyAttribute && hasKeyRefAttribute) ||
+				((hasKeyAttribute || hasKeyRefAttribute)) && keyEle != null) {
+			error("<entry> element is only allowed to contain either " +
+					"a 'key' attribute OR a 'key-ref' attribute OR a <key> sub-element", entryEle);
+		}
+		if (hasKeyAttribute) {
+			// key属性
+			key = buildTypedStringValueForMap(entryEle.getAttribute(KEY_ATTRIBUTE), defaultKeyType, entryEle);
+		}
+		else if (hasKeyRefAttribute) {
+			// key-ref属性
+			String refName = entryEle.getAttribute(KEY_REF_ATTRIBUTE);
+			if (!StringUtils.hasText(refName)) {
+				error("<entry> element contains empty 'key-ref' attribute", entryEle);
+			}
+			RuntimeBeanReference ref = new RuntimeBeanReference(refName);
+			ref.setSource(extractSource(entryEle));
+			key = ref;
+		}
+		else if (keyEle != null) {
+			// key节点
+			key = parseKeyElement(keyEle, bd, defaultKeyType);
+		}
+		else {
+			error("<entry> element must specify a key", entryEle);
+		}
+
+		// 解析出value，　value属性，　value-ref属性，　value节点　不能同时存在
+		// Extract value from attribute or sub-element.
+		Object value = null;
+		boolean hasValueAttribute = entryEle.hasAttribute(VALUE_ATTRIBUTE);
+		boolean hasValueRefAttribute = entryEle.hasAttribute(VALUE_REF_ATTRIBUTE);
+		boolean hasValueTypeAttribute = entryEle.hasAttribute(VALUE_TYPE_ATTRIBUTE);
+		if ((hasValueAttribute && hasValueRefAttribute) ||
+				((hasValueAttribute || hasValueRefAttribute)) && valueEle != null) {
+			error("<entry> element is only allowed to contain either " +
+					"'value' attribute OR 'value-ref' attribute OR <value> sub-element", entryEle);
+		}
+		if ((hasValueTypeAttribute && hasValueRefAttribute) ||
+			(hasValueTypeAttribute && !hasValueAttribute) ||
+				(hasValueTypeAttribute && valueEle != null)) {
+			error("<entry> element is only allowed to contain a 'value-type' " +
+					"attribute when it has a 'value' attribute", entryEle);
+		}
+		if (hasValueAttribute) {
+			// value 属性
+			String valueType = entryEle.getAttribute(VALUE_TYPE_ATTRIBUTE);
+			if (!StringUtils.hasText(valueType)) {
+				valueType = defaultValueType;
+			}
+			value = buildTypedStringValueForMap(entryEle.getAttribute(VALUE_ATTRIBUTE), valueType, entryEle);
+		}
+		else if (hasValueRefAttribute) {
+			// value-ref属性
+			String refName = entryEle.getAttribute(VALUE_REF_ATTRIBUTE);
+			if (!StringUtils.hasText(refName)) {
+				error("<entry> element contains empty 'value-ref' attribute", entryEle);
+			}
+			RuntimeBeanReference ref = new RuntimeBeanReference(refName);
+			ref.setSource(extractSource(entryEle));
+			value = ref;
+		}
+		else if (valueEle != null) {
+			// value节点
+			value = parsePropertySubElement(valueEle, bd, defaultValueType);
+		}
+		else {
+			error("<entry> element must specify a value", entryEle);
+		}
+
+		// Add final key and value to the Map.
+		map.put(key, value);
+	}
+
+	return map;
+}
+```
+代码看似复杂，其实就是key和value定义三种情况，key和value可以是entry节点的属性，ref属性或子节点，分这三种情况进行解析的，上例子：
+
+```xml
+<bean class="java.util.HashMap">
+	<constructor-arg>
+	    <map key-type="java.lang.Object" value-type="java.lang.Object">
+		<entry key="k1" value="v1"/>
+		<entry key-ref="car" value="v1"/>
+		<entry key="v3" value-ref="car"/>
+		<entry>
+		    <key>
+		        <value>k2</value>
+		    </key>
+		    <value>v2</value>
+		</entry>
+		<entry>
+		    <key>
+		        <value>k3</value>
+		    </key>
+		    <ref bean="car"/>
+		</entry>
+	    </map>
+	</constructor-arg>
+</bean>
+```
+把这个例子带入解析代码看的话逻辑就很清晰了。
+至此，基于xml配置，并且没有扩展标签的bean解析、注册分析完了。
