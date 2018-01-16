@@ -5,7 +5,7 @@ category: Java
 img-path: 2018-01-14- AbstractQueuedSynchronizer
 ---
 
-最近在看java.util.concurrent包下关于锁的代码，里面最核心的代码是AbstractQueuedSynchronizer.class这个类。我在网上也看了一些分析该类代码和逻辑的帖子，但总是感觉分析的不是能确切的切中要害(或者有这样的帖子，我没有找到)，因此，自己动手写一下自己的理解。这里，我们抛开锁的概念，因为AbstractQueuedSynchronizer这个工具类是解决资源竞争问题的，锁只是资源的一种，而且AbstractQueuedSynchronizer也只是为资源竞争提供就解决框架，并不是解决具体场景的问题的。
+最近在看java.util.concurrent包下关于锁的代码，里面最核心的代码是AbstractQueuedSynchronizer.class这个类，阐述一下自己的理解。这里，我们抛开锁的概念，因为AbstractQueuedSynchronizer这个工具类是解决资源竞争问题的，锁只是资源的一种，而且AbstractQueuedSynchronizer也只是为资源竞争提供就解决框架，并不是解决具体场景的问题的。
 
 ### 问题的场景  
 两种模式:
