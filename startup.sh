@@ -1,2 +1,3 @@
 #!/bin/bash
-jekyll serve
+#jekyll serve
+bundle exec jekyll server
